@@ -1,8 +1,5 @@
 
-#include "mv/graphics/renderer.h"
-#include "mv/graphics/camera2d.h"
 #define GLM_ENABLE_EXPERIMENTAL
-#define GLM_FORCE_PURE
 
 #include "mv/graphics/graphics.h"
 #include <SDL2/SDL.h>
@@ -13,8 +10,6 @@
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
 #include <memory>
-#include <stddef.h>
-#include <stdio.h>
 
 namespace mv {
 

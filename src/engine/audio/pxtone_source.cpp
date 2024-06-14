@@ -1,3 +1,4 @@
+#include <cstdint>
 #define USE_MINIAUDIO
 
 #include "mv/audio/pxtone_source.h"
@@ -6,41 +7,41 @@
 #include "soloud_error.h"
 #include "pxtnError.h"
 #include "pxtnService.h"
-#include <climits>
+#include <limits.h>
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
+#include <stdint.h>
 #include <vector>
 
 namespace SoLoud {
 
-const float int_stepf = 1.0 / INT_MAX;
+const float float_divisor = 1.0 / INT16_MAX;
 
-static bool px_read(void *user, void *p_dst, int size, int num) {
-    int i = fread(p_dst, size, num, (FILE *)user);
+bool px_read(void *user, void *p_dst, int32_t size, int32_t num) {
+    int32_t i = fread(p_dst, size, num, (FILE *)user);
     if (i < num) {
         return false;
     }
     return true;
 }
 
-static bool px_write(void *user, const void *p_dst, int size, int num) {
-    int i = fwrite(p_dst, size, num, (FILE *)user);
+bool px_write(void *user, const void *p_dst, int32_t size, int32_t num) {
+    int32_t i = fwrite(p_dst, size, num, (FILE *)user);
     if (i < num) {
         return false;
     }
     return true;
 }
 
-static bool px_seek(void *user, int mode, int size) {
+bool px_seek(void *user, int32_t mode, int32_t size) {
     if (fseek((FILE *)user, size, mode) < 0) {
         return false;
     }
     return true;
 }
 
-static bool px_pos(void *user, int *p_pos) {
-    int i = ftell((FILE *)user);
+bool px_pos(void *user, int32_t *p_pos) {
+    int32_t i = ftell((FILE *)user);
     if (i < 0) {
         return false;
     }
@@ -76,7 +77,7 @@ PXToneInstance::PXToneInstance(PXTone *parent, FILE *px_stream) {
     stream = px_stream;
     mChannels = parent->mChannels;
     mBaseSamplerate = parent->mBaseSamplerate;
-	mSamplerate = mBaseSamplerate * mSetRelativePlaySpeed * mChannels;
+	mSamplerate = mBaseSamplerate * mSetRelativePlaySpeed * mChannels / 2;
 
     // setting up the pxtone service
     service = new pxtnService(px_read, px_write, px_seek, px_pos);
@@ -125,6 +126,7 @@ PXToneInstance::PXToneInstance(PXTone *parent, FILE *px_stream) {
 
     memset(&prep, 0, sizeof(pxtnVOMITPREPARATION));
     prep.flags |= pxtnVOMITPREPFLAG_loop | pxtnVOMITPREPFLAG_unit_mute;
+    prep.fadein_sec = 5;
     prep.start_pos_float = 0;
     prep.master_volume = 1.0f;
 
@@ -148,18 +150,21 @@ PXToneInstance::~PXToneInstance() {
     // fclose(stream);
 }
 
-unsigned int PXToneInstance::getAudio(float *a_buffer, unsigned int a_samples, unsigned int sample_size) { 
+unsigned int PXToneInstance::getAudio(float *a_buffer, unsigned int a_samples, unsigned int) {
     if(!service) return 0;
 
 	int written_smp = 0;
-	int size = a_samples*mChannels;
-	std::vector<int> intermediate_buffer = std::vector<int>(size);
+	int16_t size = a_samples*mChannels  ;
+	std::vector<int16_t> intermediate_buffer = std::vector<int16_t>(size);
 
-    if (!service->Moo(intermediate_buffer.data(), size*sizeof(int), &written_smp)) done = true;
+    if (!service->Moo(intermediate_buffer.data(), size*sizeof(int16_t), &written_smp)) done = true;
 
 	for(unsigned int i=0; i < a_samples; i++) {
-		a_buffer[i] =           (float)intermediate_buffer[i*2] * int_stepf;
-		a_buffer[a_samples+i] = (float)intermediate_buffer[i*2+1] * int_stepf;
+
+		a_buffer[i] =           (float)intermediate_buffer[i*mChannels] * float_divisor * mOverallVolume;
+
+        if (mChannels >= 2)
+        a_buffer[a_samples+i] = (float)intermediate_buffer[i*mChannels+1] * float_divisor * mOverallVolume;
 	}
 
 	return written_smp;
@@ -173,7 +178,7 @@ unsigned int PXToneInstance::get_audio(float *a_buffer, unsigned int a_samples, 
 
 bool PXToneInstance::has_ended() { return hasEnded(); }
 
-result PXToneInstance::seek(time a_seconds, float *m_scratch, unsigned int m_scratch_size) {
+result PXToneInstance::seek(time , float *, unsigned int ) {
 	return NOT_IMPLEMENTED;
 }
 

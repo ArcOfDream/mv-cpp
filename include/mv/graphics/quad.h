@@ -1,6 +1,3 @@
-// #include <glm/ext/vector_float2.hpp>
-#define GLM_FORCE_PURE
-
 #include <glm/vec2.hpp>
 
 #pragma once

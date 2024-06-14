@@ -472,8 +472,6 @@ bool pxtnService::Moo( void* p_buf, int32_t  size, int32_t *written_smp )
 	if( !_moo_b_valid_data ) return false;
 	if(  _moo_b_end_vomit  ) return false;
 
-	if(written_smp) *written_smp = 0;
-
 	bool b_ret = false;
 
 	int32_t  smp_w = 0;
@@ -495,8 +493,7 @@ bool pxtnService::Moo( void* p_buf, int32_t  size, int32_t *written_smp )
 		{
 			for( int32_t ch = 0; ch < _dst_ch_num; ch++, p16++ ) *p16 = 0;
 		}
-
-		if (written_smp) *written_smp = smp_num * _dst_byte_per_smp;
+		if(written_smp) *written_smp = smp_num*_dst_byte_per_smp;
 	}
 
 	if( _sampled_proc )

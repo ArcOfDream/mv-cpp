@@ -2,6 +2,7 @@
 #include <glm/vec2.hpp>
 
 namespace mv {
+
 Quad::Quad(float x, float y, float w, float h, float img_w, float img_h) {
     img_width = img_w;
     img_height = img_h;

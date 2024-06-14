@@ -3,15 +3,17 @@
 #include "soloud_file.h"
 #include <stdio.h>
 
-// Going to make aliases for derived functions to make up for 
+#pragma once
+
+// Going to make aliases for derived functions to make up for
 // the differences in coding style.
 
 namespace SoLoud {
 
-static bool px_read(void *user, void *p_dst, long size, long num);
-static bool px_write(void *user, const void *p_dst, long size, long num);
-static bool px_seek(void *user, long mode, long size);
-static bool px_pos(void *user, long p_pos);
+bool px_read(void *user, void *p_dst, long size, long num);
+bool px_write(void *user, const void *p_dst, long size, long num);
+bool px_seek(void *user, long mode, long size);
+bool px_pos(void *user, long p_pos);
 
 class PXTone : public AudioSource {
     FILE* stream;

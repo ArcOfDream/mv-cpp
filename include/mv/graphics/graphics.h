@@ -1,3 +1,5 @@
+#pragma once
+
 #include "camera2d.h"
 #include "drawcall.h"
 #include "gl_debug.h"

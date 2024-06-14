@@ -2,6 +2,8 @@
 #include <epoxy/gl_generated.h>
 #include <vector>
 
+#pragma once
+
 namespace mv {
 struct GLMessage {
     GLenum source;

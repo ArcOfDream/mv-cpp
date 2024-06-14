@@ -1,5 +1,3 @@
-#include "soloud_error.h"
-#include "soloud_freeverbfilter.h"
 #define PROJECT_NAME "microvidya"
 #define WITH_SDL2
 
@@ -7,8 +5,9 @@
 #include "imgui.h"
 #include "soloud.h"
 #include "soloud_speech.h"
-#include "soloud_thread.h"
-#include <SDL2/SDL_image.h>
+#include "soloud_error.h"
+#include "soloud_freeverbfilter.h"
+// #include "soloud_thread.h"
 #include <epoxy/gl.h>
 #include <stdio.h>
 #include <memory>
@@ -30,7 +29,7 @@ class MyGame : public mv::Context {
 
     bool speak_already_pressed = false;
     bool stop_time = true;
-    unsigned int speak_handle = 0;
+    // unsigned int speak_handle = 0;
     unsigned int pxt_handle = 0;
     char speak_buffer[128] = "assets/pantest.ptcop";
     size_t speak_size = sizeof(speak_buffer);
@@ -42,7 +41,7 @@ class MyGame : public mv::Context {
         soloud.stop(pxt_handle);
         // speech.setText(speak_buffer);
         unsigned int err = pxt.load(speak_buffer);
-        if(err == SoLoud::SO_NO_ERROR) pxt_handle = soloud.play(pxt, 0.5f, 0.0f);
+        if(err == SoLoud::SO_NO_ERROR) pxt_handle = soloud.play(pxt, 0.9f, 0.0f);
     }
 
     void init() override {
@@ -51,7 +50,7 @@ class MyGame : public mv::Context {
         renderer.set_camera(std::shared_ptr<mv::Camera2D>(&cam));
 
         soloud.init(SoLoud::Soloud::CLIP_ROUNDOFF | SoLoud::Soloud::ENABLE_VISUALIZATION,
-                    SoLoud::Soloud::SDL2, 44100, 1024, 2);
+                    SoLoud::Soloud::SDL2, 44100, 1024, 4);
 
         // verb.setParams(1, 0.5f, 0.9f, 1);
         // pxt.setFilter(0, &verb);

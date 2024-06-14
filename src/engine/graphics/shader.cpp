@@ -3,14 +3,13 @@
 #include "mv/graphics/shader.h"
 #include <assert.h>
 #include <epoxy/gl.h>
-#include <epoxy/gl_generated.h>
-#include <fstream>
 #include <glm/glm.hpp>
+#include <fstream>
 #include <memory>
-#include <stdio.h>
-#include <string.h>
 #include <string>
 #include <vector>
+#include <string.h>
+#include <stdio.h>
 
 #define MAX_LOG_SIZE 250
 

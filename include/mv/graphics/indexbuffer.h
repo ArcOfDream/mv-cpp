@@ -1,5 +1,7 @@
 #include <epoxy/gl.h>
 
+#pragma once
+
 namespace mv {
 class IndexBuffer {
     GLuint id;

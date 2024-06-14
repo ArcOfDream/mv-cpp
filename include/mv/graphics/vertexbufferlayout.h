@@ -2,6 +2,8 @@
 #include <epoxy/gl.h>
 #include <vector>
 
+#pragma once
+
 namespace mv {
 struct VertexBufferElement {
     GLuint count;
