@@ -13,6 +13,7 @@ imgui_project = subproject('imgui')
 soloud_project = subproject('soloud')
 pxtone_project = subproject('libpxtone')
 flecs_project = subproject('flecs')
+sol_project = subproject('sol')
 
 deps = [
   dependency('sdl2'),
@@ -20,10 +21,12 @@ deps = [
   dependency('epoxy'),
   dependency('glm', required: false),
   dependency('ogg'),
-  dependency('imgui'),
-  dependency('soloud'),
-  dependency('pxtone'),
-  dependency('flecs'),
+  dependency('lua'),
+  imgui_project.get_variable('lib_imgui_dep'),
+  soloud_project.get_variable('lib_soloud_dep'),
+  pxtone_project.get_variable('lib_pxtone_dep'),
+  flecs_project.get_variable('flecs_dep'),
+  sol_project.get_variable('sol2_dep'),
 ]
 
 include_dirs = include_directories(

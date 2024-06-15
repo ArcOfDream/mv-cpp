@@ -1,6 +1,6 @@
 project('SoLoud', ['c', 'cpp'], default_options: ['default_library=static'])
 
-add_project_arguments('-DWITH_SDL2', language : 'cpp', language: 'c')
+add_project_arguments('-DWITH_SDL2', language : ['cpp', 'c'])
 add_project_arguments('-DWITH_SDL2_STATIC', language : 'cpp')
 # add_project_arguments('-DWITH_MINIAUDIO', language : 'cpp')
 # add_project_arguments('-DWITH_ALSA', language : 'cpp')

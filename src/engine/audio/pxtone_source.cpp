@@ -1,6 +1,3 @@
-#include <cstdint>
-#define USE_MINIAUDIO
-
 #include "mv/audio/pxtone_source.h"
 #include "soloud.h"
 #include "soloud_audiosource.h"

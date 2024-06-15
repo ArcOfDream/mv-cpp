@@ -21,7 +21,6 @@ class MyGame : public mv::Context {
     SoLoud::PXTone pxt;
     SoLoud::FreeverbFilter verb;
 
-
     mv::Texture kleines;
     mv::Camera2D cam = {};
     float time = 0.0f;
@@ -54,9 +53,6 @@ class MyGame : public mv::Context {
 
         // verb.setParams(1, 0.5f, 0.9f, 1);
         // pxt.setFilter(0, &verb);
-
-        unsigned int err = pxt.load("assets/crawler.ptcop");
-        if(err == SoLoud::SO_NO_ERROR) pxt_handle = soloud.play(pxt, 0.5f);
     }
 
     void update(double dt) override {
