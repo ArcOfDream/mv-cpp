@@ -2,7 +2,7 @@ project('SoLoud', ['c', 'cpp'], default_options: ['default_library=static'])
 
 add_project_arguments('-DWITH_SDL2', language : ['cpp', 'c'])
 add_project_arguments('-DWITH_SDL2_STATIC', language : 'cpp')
-# add_project_arguments('-DWITH_MINIAUDIO', language : 'cpp')
+add_project_arguments('-DWITH_MINIAUDIO', language : 'cpp')
 # add_project_arguments('-DWITH_ALSA', language : 'cpp')
 # add_project_arguments('-DWITH_NULL', language : 'cpp')
 # add_project_arguments('-DWITH_NOSOUND', language : 'cpp')
@@ -11,7 +11,6 @@ soloud_inc = include_directories('./include')
 
 deps = [
   dependency('sdl2'),
-  dependency('alsa', required: false),
   dependency('threads'),
 ]
 
@@ -19,7 +18,7 @@ sources = [
 # backend
 # 'src/backend/alsa/soloud_alsa.cpp',
 
-# 'src/backend/miniaudio/soloud_miniaudio.cpp',
+'src/backend/miniaudio/soloud_miniaudio.cpp',
 
 # 'src/backend/null/soloud_null.cpp',
 
@@ -28,7 +27,7 @@ sources = [
 'src/backend/sdl/soloud_sdl2.cpp',
 'src/backend/sdl/soloud_sdl2_dll.c',
 
-'src/backend/sdl2_static/soloud_sdl2_static.cpp',
+ 'src/backend/sdl2_static/soloud_sdl2_static.cpp',
 
 # audiosource
 'src/audiosource/ay/chipplayer.cpp',

@@ -1,3 +1,4 @@
+#include "../config.h"
 #include "vertex.h"
 #include "vertexbuffer.h"
 #include "shader.h"
@@ -7,9 +8,6 @@
 #include <vector>
 
 #pragma once
-
-#define MAX_TRIANGLES 2048
-#define MAX_VERTICES MAX_TRIANGLES * 3
 
 namespace mv {
 struct DrawCall {

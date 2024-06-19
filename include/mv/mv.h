@@ -1,3 +1,5 @@
+#include "config.h"
+
 #include "audio/pxtone_source.h"
 
 #include "binary/kleines.h"

@@ -1,4 +1,15 @@
 /builddir
+/*build/
 /.cache
 /.vscode
+
 imgui.ini
+
+*.log
+*.dxvk-cache
+
+/subprojects/lua.wrap
+/subprojects/packagecache/
+/subprojects/libepoxy*/
+/subprojects/lua*/
+/subprojects/glm*/
