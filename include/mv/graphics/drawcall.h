@@ -11,7 +11,7 @@
 
 namespace mv {
 struct DrawCall {
-    VertexBuffer vbo = VertexBuffer(0, MAX_VERTICES * sizeof(Vertex));
+    VertexBuffer vbo = VertexBuffer();
     std::shared_ptr<Shader> shader = nullptr;
     int textures[8] = {0,0,0,0,0,0,0,0};
     unsigned int active_texture = 0;

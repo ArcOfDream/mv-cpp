@@ -2,6 +2,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 
 #include "mv/graphics/graphics.h"
+#include "mv/config.h"
 #include <SDL2/SDL.h>
 #include <epoxy/gl.h>
 #include <glm/ext/matrix_clip_space.hpp>
@@ -17,13 +18,12 @@ Renderer::Renderer() {}
 
 void Renderer::init() {
     default_shader = std::shared_ptr<Shader>(new Shader());
-    drawcalls.resize(16);
 
-    for (unsigned long i = 0; i < drawcalls.size(); i++) {
+    for (unsigned long i = 0; i < MAX_DRAWCALLS; i++) {
         drawcalls[i].vbo.buffer_data(0, MAX_VERTICES * sizeof(Vertex));
     }
 
-    drawcall_amount = drawcalls.size();
+    // drawcall_amount = drawcalls.size();
     projection = glm::mat3(glm::ortho(0.0f, width, height, 0.0f));
 
     glEnable(GL_BLEND);

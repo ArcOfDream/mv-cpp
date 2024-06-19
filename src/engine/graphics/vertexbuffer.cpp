@@ -2,7 +2,7 @@
 #include <epoxy/gl.h>
 
 namespace mv {
-VertexBuffer::VertexBuffer() { glGenBuffers(1, &id); }
+VertexBuffer::VertexBuffer() { }
 
 VertexBuffer::VertexBuffer(const void *data, GLuint size) {
     glGenBuffers(1, &id);
@@ -13,6 +13,7 @@ VertexBuffer::VertexBuffer(const void *data, GLuint size) {
 VertexBuffer::~VertexBuffer() { glDeleteBuffers(1, &id); }
 
 void VertexBuffer::buffer_data(const void* data, GLuint size) {
+    if (id == 0) glGenBuffers(1, &id);
     glBindBuffer(GL_ARRAY_BUFFER, id);
     glBufferData(GL_ARRAY_BUFFER, size, data, GL_DYNAMIC_DRAW);
 }

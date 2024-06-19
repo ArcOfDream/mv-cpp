@@ -1,5 +1,6 @@
 #define GLM_FORCE_PURE
 
+#include "mv/config.h"
 #include "camera2d.h"
 #include "drawcall.h"
 #include "quad.h"
@@ -22,9 +23,9 @@ class Renderer {
     glm::mat3 projection;
     std::shared_ptr<Camera2D> active_camera = nullptr;
 
-    std::vector<DrawCall> drawcalls;
+    DrawCall drawcalls[MAX_DRAWCALLS];
     int active_drawcall = 0;
-    int drawcall_amount = 0;
+    int drawcall_amount = MAX_DRAWCALLS;
     unsigned int total_verts = 0;
 
     glm::vec4 clear_color = {0.1f, 0.2f, 0.5f, 1.0f};
