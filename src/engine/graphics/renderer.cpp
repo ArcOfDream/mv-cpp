@@ -1,8 +1,8 @@
-
+#include "mv/graphics/camera2d.h"
 #define GLM_ENABLE_EXPERIMENTAL
 
-#include "mv/graphics/graphics.h"
 #include "mv/config.h"
+#include "mv/graphics/graphics.h"
 #include <SDL2/SDL.h>
 #include <epoxy/gl.h>
 #include <glm/ext/matrix_clip_space.hpp>
@@ -15,6 +15,12 @@
 namespace mv {
 
 Renderer::Renderer() {}
+
+Renderer::~Renderer() {
+    for (DrawCall &dc : drawcalls) {
+        dc.~DrawCall();
+    }
+}
 
 void Renderer::init() {
     default_shader = std::shared_ptr<Shader>(new Shader());
@@ -29,15 +35,17 @@ void Renderer::init() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+#ifdef MV_GL_DEBUG
     glEnable(GL_DEBUG_OUTPUT);
     glDebugMessageCallback(&gl_message_callback, 0);
+#endif
 }
 
 void Renderer::set_context(SDL_GLContext ctx) { gl_context = ctx; }
 
-void Renderer::set_camera(std::shared_ptr<Camera2D> cam) { active_camera = cam; }
+void Renderer::set_camera(Camera2D *cam) { active_camera = cam; }
 
-std::shared_ptr<Camera2D> Renderer::get_camera() { return active_camera; }
+Camera2D *Renderer::get_camera() { return active_camera; }
 
 void Renderer::clear_frame() {
     glViewport(0, 0, width, height);
@@ -83,7 +91,7 @@ void Renderer::flush_drawcalls() {
                               (void *)(4 * sizeof(float)));
 
         glBufferSubData(GL_ARRAY_BUFFER, 0, dc.vertex_count * sizeof(Vertex),
-                     dc.vertices);
+                        dc.vertices);
 
         if (dc.shader) {
             dc.shader->use();
@@ -110,7 +118,7 @@ void Renderer::push_triangle(glm::vec2 apos, glm::vec2 bpos, glm::vec2 cpos,
                              glm::vec4 acol, glm::vec4 bcol, glm::vec4 ccol,
                              glm::vec2 auv, glm::vec2 buv, glm::vec2 cuv,
                              unsigned int tex_id) {
-    
+
     if (tex_id != drawcalls[active_drawcall].active_texture) {
         if (drawcalls[active_drawcall].active_texture != 0) {
             next_drawcall();

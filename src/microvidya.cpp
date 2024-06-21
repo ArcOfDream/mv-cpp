@@ -33,18 +33,15 @@ flecs::entity build_sprite_prefab(flecs::world &w) {
 
 class MyGame : public mv::Context {
     // soloud engine
-    SoLoud::Soloud soloud;
     SoLoud::Speech speech;
     SoLoud::PXTone pxt;
     SoLoud::FreeverbFilter verb;
 
     // flecs
-    flecs::world world;
     flecs::entity my_sprite;
-    std::unordered_map<std::string, flecs::entity> prefabs;
 
     mv::Texture kleines;
-    mv::Camera2D cam = {};
+    mv::Camera2D cam;
     float time = 0.0f;
     float separation = 0.0f;
 
@@ -68,14 +65,11 @@ class MyGame : public mv::Context {
     void init() override {
         kleines = mv::load_texture_from_source("kleines", kleines_png,
                                                kleines_png_size);
-        renderer.set_camera(std::shared_ptr<mv::Camera2D>(&cam));
+        renderer->set_camera(&cam);
 
         soloud.init(SoLoud::Soloud::CLIP_ROUNDOFF |
                         SoLoud::Soloud::ENABLE_VISUALIZATION,
                     SoLoud::Soloud::AUTO, 44100, 1024, 2);
-
-        world.set<mv::CRenderer>(std::shared_ptr<mv::Renderer>(&renderer));
-        world.set<mv::CContext>(std::shared_ptr<mv::Context>(this));
         prefabs["Sprite"] = build_sprite_prefab(world);
 
         my_sprite = world.entity("my_sprite").is_a(prefabs["Sprite"]);
@@ -91,13 +85,13 @@ class MyGame : public mv::Context {
         cam.rotation += 1.0f * dt;
 
         world.progress(dt);
-        printf("**\n\nmy_sprite type: %s\n\n", my_sprite.name().c_str());
+        // printf("**\n\nmy_sprite type: %s\n\n", my_sprite.name().c_str());
     }
 
     void draw() override {
         kleines.bind();
         for (int i = 0; i < 12; i++) {
-            renderer.push_quad({-128 + (separation * i), -128}, {256, 256},
+            renderer->push_quad({-128 + (separation * i), -128}, {256, 256},
                                {1, 1, 1, 1}, kleines.get_id());
         }
 
@@ -127,10 +121,10 @@ class MyGame : public mv::Context {
 int main() {
     printf("The project name is %s\n", PROJECT_NAME);
 
-    MyGame game{1440, 800, PROJECT_NAME};
+    auto game = std::make_shared<MyGame>(640, 480, "microvidya");
 
-    game.engine_init();
-    game.run();
+    game->engine_init();
+    game->run();
 
     return 0;
 }

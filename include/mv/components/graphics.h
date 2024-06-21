@@ -8,6 +8,8 @@
 #include <glm/vec4.hpp>
 #include <memory>
 
+#pragma once
+
 namespace mv {
 
 typedef std::shared_ptr<Renderer> CRenderer;
