@@ -7,6 +7,8 @@
 #include "graphics/renderer.h"
 #include "resource/resource.h"
 
+#pragma once
+
 namespace mv {
 class Context {
     SDL_Window *window;

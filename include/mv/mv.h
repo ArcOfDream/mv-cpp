@@ -6,6 +6,8 @@
 #include "binary/slkscr.h"
 #include "binary/cat.h"
 
+#include "components/graphics.h"
+
 #include "graphics/graphics.h"
 
 #include "resource/resource.h"
