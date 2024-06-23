@@ -2,6 +2,7 @@
 /*build/
 /.cache
 /.vscode
+.buildconfig
 
 imgui.ini
 

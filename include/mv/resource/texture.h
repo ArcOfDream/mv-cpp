@@ -2,6 +2,7 @@
 #include "mv/graphics/quad.h"
 #include <epoxy/gl.h>
 #include <glm/vec2.hpp>
+#include <memory>
 
 #pragma once
 
@@ -22,10 +23,14 @@ class Texture : public IResource {
     Texture();
     Texture(std::string name);
     unsigned int get_id();
+    glm::vec2 get_tex_size();
+    Quad get_quad();
     void gen_id();
     void gen_with(const void *pixels, int width, int height, GLenum fmt);
     void bind();
     void unbind();
+
+    std::shared_ptr<Texture> getptr() { return shared_from_base<Texture>(); }
 };
 
 Texture load_texture_raw(std::string name, int w, int h, GLenum format,

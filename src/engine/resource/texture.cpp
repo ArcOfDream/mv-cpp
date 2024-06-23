@@ -16,6 +16,10 @@ Texture::Texture(std::string resource_name) {
 
 unsigned int Texture::get_id() { return tex_id; }
 
+glm::vec2 Texture::get_tex_size() { return tex_size; }
+
+Quad Texture::get_quad() { return quad; }
+
 void Texture::gen_id() { glGenTextures(1, &tex_id); }
 
 void Texture::gen_with(const void *pixels, int width, int height,
