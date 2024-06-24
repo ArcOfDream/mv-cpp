@@ -16,12 +16,11 @@ typedef std::shared_ptr<Renderer> CRenderer;
 
 typedef std::shared_ptr<Context> CContext;
 
-typedef struct CRenderable {
-} CRenderable;
+typedef struct {} CRenderable, CCenterTexture;
 
 typedef std::shared_ptr<Texture> CTexture;
 
-typedef glm::vec2 CPosition, CScale;
+typedef glm::vec2 CPosition, CScale, COffset;
 
 typedef struct CAngle {
     float a = 0;

@@ -35,14 +35,14 @@ flecs::entity build_sprite_prefab(flecs::world &w) {
 }
 
 flecs::entity new_sprite(flecs::world &w, const char *name) {
-    auto sprite = w.entity(name).is_a(w.lookup("Sprite"));
-    sprite.set<mv::CPosition>({0, 0});
-    sprite.set<mv::CScale>({1, 1});
-    sprite.set<mv::CAngleDegrees>({0});
-    sprite.set<mv::CColor>({1, 1, 1, 1});
-    sprite.set<mv::CTexture>(nullptr);
-    sprite.set<mv::CMatrix>({1.0f});
-    sprite.set<mv::CVertexQuad>({});
+    auto sprite = w.entity(name)
+        .set<mv::CPosition>({0, 0})
+        .set<mv::CScale>({1, 1})
+        .set<mv::CAngleDegrees>({0})
+        .set<mv::CColor>({1, 1, 1, 1})
+        .set<mv::CTexture>(nullptr)
+        .set<mv::CMatrix>({1.0f})
+        .set<mv::CVertexQuad>({});
 
     return sprite;
 }
@@ -54,6 +54,7 @@ void setup_render_system(flecs::world &w, mv::Renderer &r) {
         .kind(flecs::PostUpdate)
         .iter([](flecs::iter it, CPosition *pos, CTexture *t, CVertexQuad *q) {
             for (auto i : it) {
+                auto e = flecs::entity(i);
                 auto tex = t[i];
                 auto size = tex->get_tex_size();
 
@@ -61,6 +62,14 @@ void setup_render_system(flecs::world &w, mv::Renderer &r) {
                 q[i].v[1].pos = {pos[i].x + size.x, pos[i].y};
                 q[i].v[2].pos = {pos[i].x + size.x, pos[i].y + size.y};
                 q[i].v[3].pos = {pos[i].x, pos[i].y + size.y};
+
+                // if (e.has<CCenterTexture>()) {
+                //     auto half = size * 0.5f;
+                //     q[i].v[0].pos -= half;
+                //     q[i].v[1].pos -= half;
+                //     q[i].v[2].pos -= half;
+                //     q[i].v[3].pos -= half;
+                // }
             }
         });
 
@@ -99,16 +108,14 @@ void setup_render_system(flecs::world &w, mv::Renderer &r) {
                 tex_ref->bind();
 
                 mat[i] = glm::mat3(1.0f);
-                // auto rotation = glm::mat3{ 1.0 };
-                // auto scale = glm::mat3{ 1.0 };
                 float rads = ang[i].a * M_PI / 180.0f;
                 // float c = cosf(rads);
                 // float s = sinf(rads);
 
-                mat[i] = glm::translate(mat[i], -p[i]);
-                mat[i] = glm::scale(mat[i], sc[i]);
                 mat[i] = glm::translate(mat[i], p[i]);
                 mat[i] = glm::rotate(mat[i], rads);
+                mat[i] = glm::translate(mat[i], -p[i]);
+                // mat[i] = glm::scale(mat[i], sc[i]);
                 // mat[i][0][0] = c * sc[i].x;
                 // mat[i][1][0] = s * sc[i].x;
                 // mat[i][0][1] = -s * sc[i].y;
@@ -117,9 +124,11 @@ void setup_render_system(flecs::world &w, mv::Renderer &r) {
                 // mat[i][1][2] = p[i].y * mat[i][1][0] - p[i].y * mat[i][1][1];
 
                 for (Vertex &v : quad[i].v) {
-                    // float fx = v.pos.x * mat[i][0][0] + v.pos.y * mat[i][0][1] +
+                    // float fx = v.pos.x * mat[i][0][0] + v.pos.y *
+                    // mat[i][0][1] +
                     //            mat[i][0][2];
-                    // float fy = v.pos.x * mat[i][1][0] + v.pos.y * mat[i][1][1] +
+                    // float fy = v.pos.x * mat[i][1][0] + v.pos.y *
+                    // mat[i][1][1] +
                     //            mat[i][1][2];
                     auto result = mat[i] * glm::vec3{v.pos.x, v.pos.y, 1};
 
@@ -183,19 +192,20 @@ class MyGame : public mv::Context {
 
         my_sprite[0] = new_sprite(world, "sprite1");
         my_sprite[0].set<CTexture>(kleines_ptr->getptr());
-        my_sprite[0].set<CScale>({1,1});
-        my_sprite[0].set<CPosition>({10,10});
+        my_sprite[0].set<CScale>({1, 1});
+        my_sprite[0].set<CPosition>({10, 10});
+        my_sprite[0].add<CCenterTexture>();
 
         my_sprite[1] = new_sprite(world, "sprite2");
         my_sprite[1].set<CTexture>(kleines_ptr->getptr());
-        my_sprite[1].set<CScale>({1,1});
+        my_sprite[1].set<CScale>({1, 1});
         my_sprite[1].set<CAngleDegrees>({300.0f});
     }
 
     void update(double dt) override {
         time += dt * 5;
-        my_sprite[1].set<mv::CPosition>({sinf(time) * 50, cosf(time) * 50});
-        // my_sprite.set<mv::CAngleDegrees>({time * 2});
+        my_sprite[1].set<mv::CPosition>({sinf(time), cosf(time)});
+        my_sprite[1].set<mv::CAngleDegrees>({time * 150});
         // cam.position.x = sinf(time*0.5f) * 200;
         // cam.position.y = cosf(time*0.3f) * 200;
         // cam.rotation += 1.0f * dt;
