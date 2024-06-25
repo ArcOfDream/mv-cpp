@@ -1,15 +1,15 @@
-#include "mv/components/graphics.h"
 #define PROJECT_NAME "microvidya"
 #define GLM_ENABLE_EXPERIMENTAL
 
-#include "flecs.h"
-#include "imgui.h"
 #include "mv/mv.h"
+#include "imgui.h"
 #include "soloud.h"
 #include "soloud_error.h"
 #include "soloud_freeverbfilter.h"
 #include "soloud_speech.h"
 #include <epoxy/gl.h>
+#include <glm/glm.hpp>
+#include <glm/gtx/matrix_operation.hpp>
 #include <glm/gtx/matrix_transform_2d.hpp>
 #include <math.h>
 #include <memory>
@@ -19,141 +19,44 @@
 
 float time_elapsed;
 
-flecs::entity build_sprite_prefab(flecs::world &w) {
-    flecs::entity sprite;
+using namespace mv;
 
-    sprite = w.prefab("Sprite");
-    sprite.set<mv::CPosition>({0, 0});
-    sprite.set<mv::CScale>({1, 1});
-    sprite.set<mv::CAngleDegrees>({0});
-    sprite.set<mv::CColor>({1, 1, 1, 1});
-    sprite.set<mv::CTexture>(nullptr);
-    sprite.set<mv::CMatrix>({1.0f});
-    sprite.add<mv::CVertexQuad>();
+struct SpriteStruct {
+    glm::vec2 pos = {0, 0};
+    glm::vec2 offset = {0, 0};
+    glm::vec2 scale = {1, 1};
+    float angle_degrees = 0;
 
-    return sprite;
-}
+    glm::vec4 color = {1, 1, 1, 1};
 
-flecs::entity new_sprite(flecs::world &w, const char *name) {
-    auto sprite = w.entity(name)
-        .set<mv::CPosition>({0, 0})
-        .set<mv::CScale>({1, 1})
-        .set<mv::CAngleDegrees>({0})
-        .set<mv::CColor>({1, 1, 1, 1})
-        .set<mv::CTexture>(nullptr)
-        .set<mv::CMatrix>({1.0f})
-        .set<mv::CVertexQuad>({});
+    std::shared_ptr<mv::Texture> tex;
+    bool center_image = true;
+    Vertex verts[4];
 
-    return sprite;
-}
+    void set_color(glm::vec4 c) {
+        color = c;
+        for (auto v : verts) {
+            v.color = c;
+        }
+    }
 
-void setup_render_system(flecs::world &w, mv::Renderer &r) {
-    using namespace mv;
+    void update_vertex_pos(glm::vec2 pos, glm::vec2 size) {
+        verts[0].pos = {pos.x, pos.y};
+        verts[1].pos = {pos.x + size.x, pos.y};
+        verts[2].pos = {pos.x + size.x, pos.y + size.y};
+        verts[3].pos = {pos.x, pos.y + size.y};
+    }
+};
 
-    w.system<CPosition, CTexture, CVertexQuad>("UpdVertexPos")
-        .kind(flecs::PostUpdate)
-        .iter([](flecs::iter it, CPosition *pos, CTexture *t, CVertexQuad *q) {
-            for (auto i : it) {
-                auto e = flecs::entity(i);
-                auto tex = t[i];
-                auto size = tex->get_tex_size();
-
-                q[i].v[0].pos = {pos[i].x, pos[i].y};
-                q[i].v[1].pos = {pos[i].x + size.x, pos[i].y};
-                q[i].v[2].pos = {pos[i].x + size.x, pos[i].y + size.y};
-                q[i].v[3].pos = {pos[i].x, pos[i].y + size.y};
-
-                // if (e.has<CCenterTexture>()) {
-                //     auto half = size * 0.5f;
-                //     q[i].v[0].pos -= half;
-                //     q[i].v[1].pos -= half;
-                //     q[i].v[2].pos -= half;
-                //     q[i].v[3].pos -= half;
-                // }
-            }
-        });
-
-    w.system<CColor, CVertexQuad>("UpdVertexColor")
-        .kind(flecs::PostUpdate)
-        .iter([](flecs::iter it, CColor *col, CVertexQuad *q) {
-            for (auto i : it) {
-                q[i].v[0].color = col[i];
-                q[i].v[1].color = col[i];
-                q[i].v[2].color = col[i];
-                q[i].v[3].color = col[i];
-            }
-        });
-
-    w.system<CTexture, CVertexQuad>("UpdVertexUV")
-        .kind(flecs::PostUpdate)
-        .iter([](flecs::iter it, CTexture *t, CVertexQuad *q) {
-            for (auto i : it) {
-                auto quad = t[i]->get_quad();
-                auto coords = quad.get_texcoords();
-
-                q[i].v[0].uv = coords[0];
-                q[i].v[1].uv = coords[1];
-                q[i].v[2].uv = coords[2];
-                q[i].v[3].uv = coords[3];
-            }
-        });
-
-    w.system<CPosition, CScale, CAngleDegrees, CTexture, CMatrix, CVertexQuad>(
-         "Render")
-        .kind(flecs::PostUpdate)
-        .iter([&r](flecs::iter it, CPosition *p, CScale *sc, CAngleDegrees *ang,
-                   CTexture *tex, CMatrix *mat, CVertexQuad *quad) {
-            for (auto i : it) {
-                auto tex_ref = tex[i];
-                tex_ref->bind();
-
-                mat[i] = glm::mat3(1.0f);
-                float rads = ang[i].a * M_PI / 180.0f;
-                // float c = cosf(rads);
-                // float s = sinf(rads);
-
-                mat[i] = glm::translate(mat[i], p[i]);
-                mat[i] = glm::rotate(mat[i], rads);
-                mat[i] = glm::translate(mat[i], -p[i]);
-                // mat[i] = glm::scale(mat[i], sc[i]);
-                // mat[i][0][0] = c * sc[i].x;
-                // mat[i][1][0] = s * sc[i].x;
-                // mat[i][0][1] = -s * sc[i].y;
-                // mat[i][1][1] = c * sc[i].y;
-                // mat[i][0][2] = p[i].x * mat[i][0][0] - p[i].y * mat[i][0][1];
-                // mat[i][1][2] = p[i].y * mat[i][1][0] - p[i].y * mat[i][1][1];
-
-                for (Vertex &v : quad[i].v) {
-                    // float fx = v.pos.x * mat[i][0][0] + v.pos.y *
-                    // mat[i][0][1] +
-                    //            mat[i][0][2];
-                    // float fy = v.pos.x * mat[i][1][0] + v.pos.y *
-                    // mat[i][1][1] +
-                    //            mat[i][1][2];
-                    auto result = mat[i] * glm::vec3{v.pos.x, v.pos.y, 1};
-
-                    v.pos.x = result.x;
-                    v.pos.y = result.y;
-                }
-
-                r.push_quad(quad[i].v[0], quad[i].v[1], quad[i].v[2],
-                            quad[i].v[3], tex[i]->get_id());
-            }
-        });
-}
-
-class MyGame : public mv::Context {
+class MyGame : public Context {
     // soloud engine
     SoLoud::Speech speech;
     SoLoud::PXTone pxt;
     SoLoud::FreeverbFilter verb;
 
-    // flecs
-    flecs::entity my_sprite[2];
-    flecs::system draw_elements_system;
-
     mv::Texture kleines;
     std::shared_ptr<mv::Texture> kleines_ptr;
+    SpriteStruct kleines_sprite = {};
 
     mv::Camera2D cam;
     float time = 0.0f;
@@ -181,45 +84,66 @@ class MyGame : public mv::Context {
         kleines =
             load_texture_from_source("kleines", kleines_png, kleines_png_size);
         kleines_ptr = std::shared_ptr<Texture>(&kleines);
+        kleines_sprite.tex = kleines_ptr->getptr();
+
+        // getting the texture coordinates for the sprite
+        auto coords = kleines.get_quad().get_texcoords();
+        kleines_sprite.verts[0].uv = coords[0];
+        kleines_sprite.verts[1].uv = coords[1];
+        kleines_sprite.verts[2].uv = coords[2];
+        kleines_sprite.verts[3].uv = coords[3];
+
+        // kleines_sprite.pos = {-100, -100};
+        kleines_sprite.offset = {-0, -0};
+        kleines_sprite.scale = {1, 1};
+        kleines_sprite.set_color({1, 1, 1, 1});
 
         renderer->set_camera(&cam);
 
         soloud.init(SoLoud::Soloud::CLIP_ROUNDOFF |
                         SoLoud::Soloud::ENABLE_VISUALIZATION,
                     SoLoud::Soloud::AUTO, 44100, 1024, 2);
-        prefabs["Sprite"] = build_sprite_prefab(world);
-        setup_render_system(world, *renderer);
-
-        my_sprite[0] = new_sprite(world, "sprite1");
-        my_sprite[0].set<CTexture>(kleines_ptr->getptr());
-        my_sprite[0].set<CScale>({1, 1});
-        my_sprite[0].set<CPosition>({10, 10});
-        my_sprite[0].add<CCenterTexture>();
-
-        my_sprite[1] = new_sprite(world, "sprite2");
-        my_sprite[1].set<CTexture>(kleines_ptr->getptr());
-        my_sprite[1].set<CScale>({1, 1});
-        my_sprite[1].set<CAngleDegrees>({300.0f});
     }
 
     void update(double dt) override {
         time += dt * 5;
-        my_sprite[1].set<mv::CPosition>({sinf(time), cosf(time)});
-        my_sprite[1].set<mv::CAngleDegrees>({time * 150});
-        // cam.position.x = sinf(time*0.5f) * 200;
-        // cam.position.y = cosf(time*0.3f) * 200;
-        // cam.rotation += 1.0f * dt;
+        kleines_sprite.angle_degrees += 180.0f * dt;
+        kleines_sprite.pos = {cosf(time * 0.5f) * 300, sinf(time * 0.5f) * 300};
+        kleines_sprite.scale = {1, cosf(time * 0.1)};
+        // cam.position.x = sinf(time) * 100;
+        // cam.position.y = cosf(time) * 100;
+        // cam.position = {0, sinf(time*0.5f)*100};
+        // cam.rotation = M_PI/4;
 
         world.progress(dt);
-        // printf("**\n\nmy_sprite type: %s\n\n", my_sprite.name().c_str());
     }
 
     void draw() override {
-        // kleines.bind();
-        // for (int i = 0; i < 12; i++) {
-        //     renderer->push_quad({-128 + (separation * i), -128}, {256, 256},
-        //                         {1, 1, 1, 1}, kleines.get_id());
-        // }
+        // update vertex points
+        auto size = kleines.get_tex_size();
+        auto offset = kleines_sprite.offset;
+        if (kleines_sprite.center_image)
+            offset -= size * 0.5f;
+        kleines_sprite.update_vertex_pos(offset, size);
+
+        // setup model matrix
+        float rads = kleines_sprite.angle_degrees * M_PI / 180.0f;
+        glm::mat3 model{1.0f};
+
+        model = glm::translate(model, kleines_sprite.pos);
+        model = glm::rotate(model, rads);
+        model = glm::scale(model, kleines_sprite.scale);
+
+        // apply matrix to positions
+        for (auto &v : kleines_sprite.verts) {
+            auto result = model * glm::vec3(v.pos, 1);
+            v.pos = {result.x, result.y};
+        }
+
+        // push the quad
+        renderer->push_quad(kleines_sprite.verts[0], kleines_sprite.verts[1],
+                            kleines_sprite.verts[2], kleines_sprite.verts[3],
+                            kleines.get_id());
 
         ImGui::Begin("Kleines");
 

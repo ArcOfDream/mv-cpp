@@ -1,6 +1,7 @@
-#include "mv/graphics/camera2d.h"
 #define GLM_ENABLE_EXPERIMENTAL
 
+#include "flecs.h"
+#include "mv/components/graphics.h"
 #include "mv/config.h"
 #include "mv/graphics/graphics.h"
 #include <SDL2/SDL.h>
@@ -58,6 +59,7 @@ void Renderer::begin_frame() {
     if (active_camera) {
         active_camera->update();
         projection *= active_camera->view_transform;
+        // projection = active_camera->view_transform * projection;
     }
 }
 

@@ -1,8 +1,5 @@
-#include "mv/context.h"
-#include "mv/graphics/renderer.h"
 #include "mv/graphics/vertex.h"
 #include "mv/resource/texture.h"
-#include <flecs.h>
 #include <glm/mat3x3.hpp>
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
@@ -11,10 +8,6 @@
 #pragma once
 
 namespace mv {
-
-typedef std::shared_ptr<Renderer> CRenderer;
-
-typedef std::shared_ptr<Context> CContext;
 
 typedef struct {} CRenderable, CCenterTexture;
 

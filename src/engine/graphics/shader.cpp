@@ -27,7 +27,7 @@ const char *default_vert =
     "uniform mat3 view;\n "
     "uniform mat3 projection;\n"
     "void main() {\n"
-    "	vertexColor = vec4(1.0);\n"
+    "	vertexColor = vec4(1.0f);\n"
     "	texUV = attribUV;\n"
     // "	texIndex = attribTextureIndex;\n"
     "   gl_Position = vec4(projection * vec3(attribPos, 1.0), 1.0);\n"

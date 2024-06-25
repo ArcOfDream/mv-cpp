@@ -2,7 +2,7 @@
 #include "imgui.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_sdl2.h"
-#include "mv/components/graphics.h"
+#include "mv/components/singletons.h"
 #include "mv/graphics/renderer.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_events.h>

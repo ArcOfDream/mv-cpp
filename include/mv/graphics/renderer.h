@@ -1,7 +1,9 @@
 #define GLM_FORCE_PURE
 
+#include "../components/graphics.h"
 #include "camera2d.h"
 #include "drawcall.h"
+#include "flecs.h"
 #include "mv/config.h"
 #include "quad.h"
 #include "shader.h"
@@ -20,7 +22,6 @@
 namespace mv {
 
 class Renderer : public std::enable_shared_from_this<Renderer> {
-    glm::mat3 projection;
     Camera2D *active_camera = nullptr;
 
     DrawCall drawcalls[MAX_DRAWCALLS];
@@ -35,6 +36,7 @@ class Renderer : public std::enable_shared_from_this<Renderer> {
   public:
     float width;
     float height;
+    glm::mat3 projection;
 
     Renderer();
     ~Renderer();
@@ -60,9 +62,7 @@ class Renderer : public std::enable_shared_from_this<Renderer> {
     void push_quad(Vertex &v1, Vertex &v2, Vertex &v3, Vertex &v4,
                    unsigned int tex);
 
-    std::shared_ptr<Renderer> getptr() {
-      return shared_from_this();
-    }
+    std::shared_ptr<Renderer> getptr() { return shared_from_this(); }
 };
 
 } // namespace mv

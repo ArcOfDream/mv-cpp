@@ -12,7 +12,6 @@ fs = import('fs')
 imgui_project = subproject('imgui')
 soloud_project = subproject('soloud')
 pxtone_project = subproject('libpxtone')
-flecs_project = subproject('flecs')
 sol_project = subproject('sol')
 
 deps = [
@@ -25,7 +24,6 @@ deps = [
   imgui_project.get_variable('lib_imgui_dep'),
   soloud_project.get_variable('lib_soloud_dep'),
   pxtone_project.get_variable('lib_pxtone_dep'),
-  flecs_project.get_variable('flecs_dep'),
   sol_project.get_variable('sol2_dep'),
 ]
 
@@ -35,7 +33,6 @@ includes = [include_dirs]
 includes += imgui_project.get_variable('imgui_inc')
 includes += soloud_project.get_variable('soloud_inc')
 includes += pxtone_project.get_variable('pxtone_inc')
-includes += flecs_project.get_variable('flecs_inc')
 
 sources = [
   'src/engine/audio/pxtone_source.cpp',
