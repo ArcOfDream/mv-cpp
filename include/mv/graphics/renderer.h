@@ -3,7 +3,6 @@
 #include "../components/graphics.h"
 #include "camera2d.h"
 #include "drawcall.h"
-#include "flecs.h"
 #include "mv/config.h"
 #include "quad.h"
 #include "shader.h"
@@ -33,13 +32,23 @@ class Renderer : public std::enable_shared_from_this<Renderer> {
     SDL_GLContext gl_context = 0;
     std::shared_ptr<Shader> default_shader = nullptr;
 
+    Renderer(){};
+
   public:
     float width;
     float height;
     glm::mat3 projection;
 
-    Renderer();
+    Renderer(Renderer const &) = delete;
+    void operator=(Renderer const &) = delete;
+
     ~Renderer();
+
+    static Renderer &get() {
+        static Renderer r;
+        return r;
+    }
+
     void init();
     void set_context(SDL_GLContext);
     void set_camera(Camera2D *);
@@ -62,7 +71,7 @@ class Renderer : public std::enable_shared_from_this<Renderer> {
     void push_quad(Vertex &v1, Vertex &v2, Vertex &v3, Vertex &v4,
                    unsigned int tex);
 
-    std::shared_ptr<Renderer> getptr() { return shared_from_this(); }
+    // std::shared_ptr<Renderer> getptr() { return shared_from_this(); }
 };
 
 } // namespace mv

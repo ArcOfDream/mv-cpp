@@ -4,8 +4,6 @@
 #include <memory>
 #include <unordered_map>
 #include <string>
-#include "flecs.h"
-#include "flecs/addons/cpp/entity.hpp"
 #include "soloud.h"
 #include "graphics/renderer.h"
 #include "resource/resource.h"
@@ -33,12 +31,10 @@ class Context : public std::enable_shared_from_this<Context> {
     void engine_exit();
 
   protected:
-    std::shared_ptr<Renderer> renderer;
+    Renderer &renderer = Renderer::get();
     SoLoud::Soloud soloud;
-    flecs::world world;
 
   public:
-    std::unordered_map<std::string, flecs::entity> prefabs;
     Context();
     ~Context();
     Context(int width, int height, std::string title);

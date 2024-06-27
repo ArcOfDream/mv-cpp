@@ -3,6 +3,7 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_rwops.h>
 #include <epoxy/gl.h>
+#include <memory>
 #include <string>
 
 namespace mv {
@@ -43,17 +44,17 @@ void Texture::bind() { glBindTexture(GL_TEXTURE_2D, tex_id); }
 
 void Texture::unbind() { glBindTexture(GL_TEXTURE_2D, 0); }
 
-Texture load_texture_raw(std::string name, int w, int h, GLenum format,
+std::shared_ptr<Texture> load_texture_raw(std::string name, int w, int h, GLenum format,
                                  const void *pixels) {
-    Texture t{name};
-    t.gen_id();
-    t.gen_with(pixels, w, h, format);
-    t.unbind();
+    std::shared_ptr<Texture> t = std::make_shared<Texture>(name);
+    t->gen_id();
+    t->gen_with(pixels, w, h, format);
+    t->unbind();
 
     return t;
 }
 
-Texture load_texture_from_file(std::string name, std::string path) {
+std::shared_ptr<Texture> load_texture_from_file(std::string name, std::string path) {
     SDL_RWops *file = SDL_RWFromFile(path.c_str(), "r");
     if (!file) {
         return {};
@@ -82,7 +83,7 @@ Texture load_texture_from_file(std::string name, std::string path) {
     return load_texture_raw(name, img->w, img->h, format, img->pixels);
 }
 
-Texture load_texture_from_source(std::string name, const void *bytes,
+std::shared_ptr<Texture> load_texture_from_source(std::string name, const void *bytes,
                                  unsigned long size) {
     auto file = SDL_RWFromConstMem(bytes, size);
     if (!file) { return {}; }

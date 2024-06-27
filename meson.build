@@ -19,7 +19,7 @@ deps = [
   dependency('SDL2_image'),
   dependency('epoxy'),
   dependency('glm'),
-  dependency('ogg'),
+  # dependency('ogg'),
   dependency('lua'),
   imgui_project.get_variable('lib_imgui_dep'),
   soloud_project.get_variable('lib_soloud_dep'),
@@ -45,6 +45,9 @@ sources = [
   'src/engine/graphics/shader.cpp',
   'src/engine/graphics/camera2d.cpp',
   'src/engine/graphics/renderer.cpp',
+
+  'src/engine/objects/node.cpp',
+  'src/engine/objects/sprite.cpp',
 
   'src/engine/resource/texture.cpp',
 

@@ -1,6 +1,5 @@
 #define GLM_ENABLE_EXPERIMENTAL
 
-#include "flecs.h"
 #include "mv/components/graphics.h"
 #include "mv/config.h"
 #include "mv/graphics/graphics.h"
@@ -14,8 +13,6 @@
 #include <memory>
 
 namespace mv {
-
-Renderer::Renderer() {}
 
 Renderer::~Renderer() {
     for (DrawCall &dc : drawcalls) {

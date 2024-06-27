@@ -33,10 +33,10 @@ class Texture : public IResource {
     std::shared_ptr<Texture> getptr() { return shared_from_base<Texture>(); }
 };
 
-Texture load_texture_raw(std::string name, int w, int h, GLenum format,
+std::shared_ptr<Texture> load_texture_raw(std::string name, int w, int h, GLenum format,
                          const void *pixels);
-Texture load_texture_from_file(std::string name, std::string path);
-Texture load_texture_from_source(std::string name, const void *bytes,
+std::shared_ptr<Texture> load_texture_from_file(std::string name, std::string path);
+std::shared_ptr<Texture> load_texture_from_source(std::string name, const void *bytes,
                                  unsigned long size);
 
 } // namespace mv

@@ -2,7 +2,6 @@
 #include "imgui.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_sdl2.h"
-#include "mv/components/singletons.h"
 #include "mv/graphics/renderer.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_events.h>
@@ -35,7 +34,8 @@ Context::~Context() {
     ImGui_ImplSDL2_Shutdown();
     ImGui::DestroyContext();
 
-    renderer.reset();
+    // renderer.reset();
+    renderer.~Renderer();
 
     SDL_GL_DeleteContext(gl_context);
     SDL_DestroyWindow(window);
@@ -70,11 +70,10 @@ void Context::engine_init() {
     SDL_GL_MakeCurrent(window, gl_context);
 
     // renderer init
-    renderer = std::make_shared<Renderer>();
-    renderer->init();
-    renderer->width = window_width;
-    renderer->height = window_height;
-    renderer->set_context(gl_context);
+    renderer.init();
+    renderer.width = window_width;
+    renderer.height = window_height;
+    renderer.set_context(gl_context);
 
     // Imgui init
     IMGUI_CHECKVERSION();
@@ -87,11 +86,6 @@ void Context::engine_init() {
 
     ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
     ImGui_ImplOpenGL3_Init();
-
-    // flecs setup
-    world.set<flecs::Rest>({});
-    world.set<mv::CRenderer>(renderer->getptr());
-    world.set<mv::CContext>(getptr());
 
     init();
 }
@@ -162,12 +156,12 @@ void Context::engine_input() {
 void Context::engine_update(double dt) { update(dt); }
 
 void Context::engine_draw() {
-    renderer->clear_frame();
-    renderer->begin_frame();
+    renderer.clear_frame();
+    renderer.begin_frame();
 
     draw();
 
-    renderer->end_frame();
+    renderer.end_frame();
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -177,9 +171,9 @@ void Context::engine_draw() {
 
 void Context::engine_exit() { should_close = true; }
 
-std::shared_ptr<Renderer> Context::get_renderer() {
-    return renderer->getptr();
-}
+// std::shared_ptr<Renderer> Context::get_renderer() {
+//     return renderer.getptr();
+// }
 
 void Context::set_target_fps(unsigned int value) {
     target_fps = value;
