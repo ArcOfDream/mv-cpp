@@ -1,15 +1,15 @@
 #define GLM_FORCE_PURE
 
 #include "mv/graphics/shader.h"
+#include "mv/gl.h"
 #include <assert.h>
-#include <epoxy/gl.h>
-#include <glm/glm.hpp>
 #include <fstream>
+#include <glm/glm.hpp>
 #include <memory>
+#include <stdio.h>
+#include <string.h>
 #include <string>
 #include <vector>
-#include <string.h>
-#include <stdio.h>
 
 #define MAX_LOG_SIZE 250
 
@@ -20,14 +20,13 @@ const char *default_vert =
     "attribute vec2 attribPos;\n"
     "attribute vec2 attribUV;\n"
     "attribute vec4 attribColor;\n"
-    // "attribute float attribTextureIndex;\n"
-    "varying vec4 vertexColor;\n"
-    "varying vec2 texUV;\n"
+    "varying mediump vec4 vertexColor;\n"
+    "varying mediump vec2 texUV;\n"
     // "varying float texIndex;\n"
     "uniform mat3 view;\n "
     "uniform mat3 projection;\n"
     "void main() {\n"
-    "	vertexColor = vec4(1.0f);\n"
+    "	vertexColor = attribColor;\n"
     "	texUV = attribUV;\n"
     // "	texIndex = attribTextureIndex;\n"
     "   gl_Position = vec4(projection * vec3(attribPos, 1.0), 1.0);\n"
@@ -42,8 +41,8 @@ const char *default_frag =
     // "uniform sampler2D texID[8];\n"
     "void main() {\n"
     "	gl_FragColor = texture2D(texID, texUV) * vertexColor;\n"
-    // "	gl_FragColor = texture2D(texID[int(texIndex)], texUV) * vertexColor;\n"
-    // "	gl_FragColor = vertexColor;\n"
+    // "	gl_FragColor = texture2D(texID[int(texIndex)], texUV) *
+    // vertexColor;\n" "	gl_FragColor = vertexColor;\n"
     "}\n";
 
 Shader::Shader(const char *vs_path, const char *fs_path) {
@@ -111,12 +110,16 @@ void Shader::set_int(const ShaderUniform &u, int value) const {
     glUniform1i(u.location, value);
 };
 
-void Shader::set_int_array(const std::string &name, unsigned int array_size, int *value) const {
+void Shader::set_int_array(const std::string &name, unsigned int array_size,
+                           int *value) const {
     glUniform1iv(glGetUniformLocation(id, name.c_str()), array_size, value);
 }
 
-void Shader::set_uint_array(const std::string &name, unsigned int array_size, unsigned int *value) const {
+void Shader::set_uint_array(const std::string &name, unsigned int array_size,
+                            unsigned int *value) const {
+#ifndef MV_USE_PURE_GLES2
     glUniform1uiv(glGetUniformLocation(id, name.c_str()), array_size, value);
+#endif
 }
 
 void Shader::set_float(const std::string &name, float value) const {
@@ -154,7 +157,8 @@ void Shader::set_vec4(const ShaderUniform &u, const glm::vec4 &value) const {
 };
 
 void Shader::set_mat3(const std::string &name, const glm::mat3 &mat) const {
-    glUniformMatrix3fv(glGetUniformLocation(id, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+    glUniformMatrix3fv(glGetUniformLocation(id, name.c_str()), 1, GL_FALSE,
+                       &mat[0][0]);
 };
 
 void Shader::set_mat3(const ShaderUniform &u, const glm::mat3 &mat) const {

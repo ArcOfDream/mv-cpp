@@ -1,6 +1,6 @@
 #include "resource.h"
 #include "mv/graphics/quad.h"
-#include <epoxy/gl.h>
+#include "mv/gl.h"
 #include <glm/vec2.hpp>
 #include <memory>
 

@@ -7,7 +7,7 @@ namespace mv {
     struct Vertex {
         glm::vec2 pos;
         glm::vec2 uv;
-        glm::vec4 color;
+        glm::vec4 color = {1,1,1,1};
         // float tex_index;
     };
 }

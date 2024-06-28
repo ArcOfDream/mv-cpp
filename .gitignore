@@ -14,3 +14,5 @@ imgui.ini
 /subprojects/libepoxy*/
 /subprojects/lua*/
 /subprojects/glm*/
+
+/lib

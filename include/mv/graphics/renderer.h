@@ -1,6 +1,6 @@
 #define GLM_FORCE_PURE
 
-#include "../components/graphics.h"
+#include "mv/gl.h"
 #include "camera2d.h"
 #include "drawcall.h"
 #include "mv/config.h"
@@ -9,7 +9,6 @@
 #include "vertex.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_video.h>
-#include <epoxy/gl.h>
 #include <glm/mat3x3.hpp>
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>

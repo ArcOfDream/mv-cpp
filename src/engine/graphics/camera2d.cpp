@@ -19,8 +19,8 @@ namespace mv {
 
         if (center_camera) { origin += size*0.5f; }
 
-        view_transform = { 1.0f };
-        glm::mat3 rotation_matrix = { 1.0f };
+        view_transform = glm::mat3(1.0f);
+        glm::mat3 rotation_matrix = glm::mat3(1.0);
 
         rotation_matrix = glm::translate(rotation_matrix, origin);
         rotation_matrix = glm::scale(rotation_matrix, scale);

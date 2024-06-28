@@ -2,6 +2,7 @@
 #include "imgui.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_sdl2.h"
+#include "mv/gl.h"
 #include "mv/graphics/renderer.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_events.h>
@@ -9,7 +10,6 @@
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_video.h>
 #include <assert.h>
-#include <epoxy/gl.h>
 #include <memory>
 
 #ifdef __EMSCRIPTEN__
@@ -43,11 +43,11 @@ Context::~Context() {
 }
 
 void Context::engine_init() {
-#ifdef __unix__
-    SDL_SetHint(SDL_HINT_VIDEODRIVER, "wayland,x11");
-#endif
+// #ifdef __unix__
+//     SDL_SetHint(SDL_HINT_VIDEODRIVER, "wayland,x11");
+// #endif
     // SDL init
-    int result = SDL_Init(SDL_INIT_EVERYTHING);
+    int result = SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO|SDL_INIT_EVENTS);
     assert(result == 0);
 
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
@@ -93,7 +93,7 @@ void Context::engine_init() {
 void Context::run() {
     SDL_ShowWindow(window);
 
-    unsigned long old_time = SDL_GetTicks64();
+    unsigned long old_time = SDL_GetTicks();
     unsigned long runtime_fps = 0;
     unsigned long step_time = 0;
     double delta_time = 0;
@@ -103,7 +103,7 @@ void Context::run() {
             break;
         }
 
-        unsigned long new_time = SDL_GetTicks64();
+        unsigned long new_time = SDL_GetTicks();
         unsigned long time_since_frame = new_time - old_time;
 
         delta_time = (double)(new_time - step_time) * 0.001;
@@ -156,6 +156,10 @@ void Context::engine_input() {
 void Context::engine_update(double dt) { update(dt); }
 
 void Context::engine_draw() {
+    SDL_GetWindowSize(window, &window_width, &window_height);
+    renderer.width = window_width;
+    renderer.height = window_height;
+    
     renderer.clear_frame();
     renderer.begin_frame();
 

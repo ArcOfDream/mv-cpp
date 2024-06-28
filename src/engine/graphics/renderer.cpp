@@ -2,9 +2,9 @@
 
 #include "mv/components/graphics.h"
 #include "mv/config.h"
+#include "mv/gl.h"
 #include "mv/graphics/graphics.h"
 #include <SDL2/SDL.h>
-#include <epoxy/gl.h>
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/gtx/matrix_transform_2d.hpp>
 #include <glm/mat3x3.hpp>

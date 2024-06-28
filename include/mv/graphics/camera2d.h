@@ -8,7 +8,7 @@
 namespace mv {
 class Camera2D {
   public:
-    glm::mat3 view_transform = { 1.0f };
+    glm::mat3 view_transform = glm::mat3(1.0f);
     glm::vec2 size = {0, 0};
     glm::vec2 position = {0, 0};
     glm::vec2 offset = {0, 0};

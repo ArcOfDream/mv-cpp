@@ -1,5 +1,4 @@
-#include <epoxy/gl.h>
-#include <epoxy/gl_generated.h>
+#include "mv/gl.h"
 #include <vector>
 
 #pragma once

@@ -1,5 +1,5 @@
 #include "mv/graphics/indexbuffer.h"
-#include <epoxy/gl.h>
+#include "mv/gl.h"
 
 namespace mv {
 IndexBuffer::IndexBuffer(const void *data, GLuint size) {

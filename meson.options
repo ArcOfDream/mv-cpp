@@ -1,0 +1,2 @@
+# build options
+option('use_pure_gles2', type: 'boolean', value: false)

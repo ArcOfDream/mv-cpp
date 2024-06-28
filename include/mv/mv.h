@@ -1,4 +1,5 @@
 #include "config.h"
+#include "gl.h"
 
 #include "audio/pxtone_source.h"
 

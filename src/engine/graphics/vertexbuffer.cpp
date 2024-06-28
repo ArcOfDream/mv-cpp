@@ -1,5 +1,5 @@
 #include "mv/graphics/vertexbuffer.h"
-#include <epoxy/gl.h>
+#include "mv/gl.h"
 
 namespace mv {
 VertexBuffer::VertexBuffer() { }

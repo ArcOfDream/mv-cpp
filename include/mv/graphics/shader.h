@@ -1,8 +1,7 @@
 #include <glm/ext/matrix_float3x3.hpp>
 #define GLM_FORCE_PURE
 
-#include <epoxy/gl.h>
-#include <epoxy/gl_generated.h>
+#include "mv/gl.h"
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>

@@ -1,8 +1,8 @@
 #include "mv/resource/texture.h"
+#include "mv/gl.h"
 #include "mv/graphics/quad.h"
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_rwops.h>
-#include <epoxy/gl.h>
 #include <memory>
 #include <string>
 
@@ -23,8 +23,7 @@ Quad Texture::get_quad() { return quad; }
 
 void Texture::gen_id() { glGenTextures(1, &tex_id); }
 
-void Texture::gen_with(const void *pixels, int width, int height,
-                       GLenum fmt) {
+void Texture::gen_with(const void *pixels, int width, int height, GLenum fmt) {
     tex_size = {width, height};
     quad = Quad(0, 0, tex_size.x, tex_size.y, width, height);
     format = fmt;
@@ -44,8 +43,8 @@ void Texture::bind() { glBindTexture(GL_TEXTURE_2D, tex_id); }
 
 void Texture::unbind() { glBindTexture(GL_TEXTURE_2D, 0); }
 
-std::shared_ptr<Texture> load_texture_raw(std::string name, int w, int h, GLenum format,
-                                 const void *pixels) {
+std::shared_ptr<Texture> load_texture_raw(std::string name, int w, int h,
+                                          GLenum format, const void *pixels) {
     std::shared_ptr<Texture> t = std::make_shared<Texture>(name);
     t->gen_id();
     t->gen_with(pixels, w, h, format);
@@ -54,39 +53,12 @@ std::shared_ptr<Texture> load_texture_raw(std::string name, int w, int h, GLenum
     return t;
 }
 
-std::shared_ptr<Texture> load_texture_from_file(std::string name, std::string path) {
+std::shared_ptr<Texture> load_texture_from_file(std::string name,
+                                                std::string path) {
     SDL_RWops *file = SDL_RWFromFile(path.c_str(), "r");
     if (!file) {
         return {};
     }
-
-    auto img = IMG_Load_RW(file, 1);
-    if (!img) {
-        return {};
-    }
-
-    GLenum format;
-    //unsigned int channels;
-
-    switch (img->format->Amask) {
-    case 0:
-        format = GL_RGB;
-        //channels = 3;
-        break;
-
-    default:
-        format = GL_RGBA;
-        //channels = 4;
-        break;
-    }
-
-    return load_texture_raw(name, img->w, img->h, format, img->pixels);
-}
-
-std::shared_ptr<Texture> load_texture_from_source(std::string name, const void *bytes,
-                                 unsigned long size) {
-    auto file = SDL_RWFromConstMem(bytes, size);
-    if (!file) { return {}; }
 
     auto img = IMG_Load_RW(file, 1);
     if (!img) {
@@ -99,12 +71,43 @@ std::shared_ptr<Texture> load_texture_from_source(std::string name, const void *
     switch (img->format->Amask) {
     case 0:
         format = GL_RGB;
-        //channels = 3;
+        // channels = 3;
         break;
 
     default:
         format = GL_RGBA;
-        //channels = 4;
+        // channels = 4;
+        break;
+    }
+
+    return load_texture_raw(name, img->w, img->h, format, img->pixels);
+}
+
+std::shared_ptr<Texture> load_texture_from_source(std::string name,
+                                                  const void *bytes,
+                                                  unsigned long size) {
+    auto file = SDL_RWFromConstMem(bytes, size);
+    if (!file) {
+        return {};
+    }
+
+    auto img = IMG_Load_RW(file, 1);
+    if (!img) {
+        return {};
+    }
+
+    GLenum format;
+    // unsigned int channels;
+
+    switch (img->format->Amask) {
+    case 0:
+        format = GL_RGB;
+        // channels = 3;
+        break;
+
+    default:
+        format = GL_RGBA;
+        // channels = 4;
         break;
     }
 

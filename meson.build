@@ -8,6 +8,7 @@ project(
 
 cc = meson.get_compiler('c')
 fs = import('fs')
+l_args = []
 
 imgui_project = subproject('imgui')
 soloud_project = subproject('soloud')
@@ -17,7 +18,6 @@ sol_project = subproject('sol')
 deps = [
   dependency('sdl2'),
   dependency('SDL2_image'),
-  dependency('epoxy'),
   dependency('glm'),
   # dependency('ogg'),
   dependency('lua'),
@@ -26,6 +26,24 @@ deps = [
   pxtone_project.get_variable('lib_pxtone_dep'),
   sol_project.get_variable('sol2_dep'),
 ]
+
+if get_option('use_pure_gles2')
+  if target_machine.system() != 'windows'
+    deps += dependency('glesv2')
+  else
+    l_args += '-L' + meson.global_source_root() + '/lib'
+    l_args += '-llibSDL2'
+    l_args += '-llibGLESv2'
+    l_args += '-llibEGL'
+  endif
+  add_project_arguments('-DMV_USE_PURE_GLES2', language: ['cpp', 'c'])
+else
+  deps += dependency('epoxy')
+  l_args += '-L' + meson.global_source_root() + '/lib'
+  # l_args += '-llibSDL2'
+  l_args += '-llibGLESv2'
+  # l_args += '-llibEGL'
+endif
 
 include_dirs = include_directories('include')
 includes = [include_dirs]
@@ -62,7 +80,8 @@ exe = executable(
   dependencies: deps,
   include_directories: includes,
   install: true,
-  install_dir:'./'
+  install_dir: './',
+  link_args: l_args,
 )
 
 install_subdir('assets', install_dir: './')

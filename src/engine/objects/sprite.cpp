@@ -1,21 +1,20 @@
-#include "mv/graphics/renderer.h"
-#include <cmath>
 #define GLM_ENABLE_EXPERIMENTAL
+#define _USE_MATH_DEFINES
 
 #include "mv/objects/sprite.h"
-#include "mv/graphics/quad.h"
-#include "mv/graphics/vertex.h"
-#include "mv/resource/texture.h"
+#include "mv/graphics/graphics.h"
 #include "mv/util.h"
 #include <glm/glm.hpp>
 #include <glm/gtx/matrix_transform_2d.hpp>
 #include <memory>
 #include <string>
+#include <math.h>
 
 namespace mv {
 Sprite::Sprite(const char* _name, std::shared_ptr<Texture> _tex) : Node(_name) {
     name = _name;
     set_texture(_tex);
+    // set_color(color);
 }
 
 void Sprite::update_vertex_pos(glm::vec2 pos, glm::vec2 size) {
