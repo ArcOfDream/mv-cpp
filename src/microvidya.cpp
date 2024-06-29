@@ -3,13 +3,9 @@
 #define _USE_MATH_DEFINES
 
 #include "imgui.h"
-#include "mv/graphics/fontrender.h"
-// #include "fontstash.h"
-#include "mv/graphics/fontrender.h"
 // #include "fontstash.h"
 #include "mv/mv.h"
-// #include "mv/gl.h"
-// #include "mv/gl.h"
+#include "mv/graphics/fontrender.h"
 #include "soloud.h"
 #include "soloud_error.h"
 #include "soloud_freeverbfilter.h"
@@ -39,8 +35,6 @@ class MyGame : public Context {
 
     FontRender f;
 
-    FontRender f;
-
     Camera2D cam;
     float time = 0.0f;
     float separation = 0.0f;
@@ -63,7 +57,6 @@ class MyGame : public Context {
     }
 
     void init() override {
-        set_target_fps(60);
         set_target_fps(60);
         kleines_ptr =
             load_texture_from_source("kleines", kleines_png, kleines_png_size);
