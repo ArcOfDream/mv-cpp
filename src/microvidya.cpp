@@ -1,11 +1,9 @@
-#include "SDL_video.h"
-#include <X11/X.h>
 #define PROJECT_NAME "microvidya"
 #define GLM_ENABLE_EXPERIMENTAL
 #define _USE_MATH_DEFINES
 
-#include "mv/mv.h"
 #include "imgui.h"
+#include "mv/mv.h"
 #include "soloud.h"
 #include "soloud_error.h"
 #include "soloud_freeverbfilter.h"
@@ -55,6 +53,7 @@ class MyGame : public Context {
     }
 
     void init() override {
+        set_target_fps(30);
         kleines_ptr =
             load_texture_from_source("kleines", kleines_png, kleines_png_size);
 
@@ -64,11 +63,23 @@ class MyGame : public Context {
                         SoLoud::Soloud::ENABLE_VISUALIZATION,
                     SoLoud::Soloud::AUTO, 44100, 1024, 2);
 
-        kleines_root = std::make_unique<Sprite>("kleines root", kleines_ptr->getptr());
-        kleines_child = kleines_root->add_child<Sprite>("kleines child", kleines_ptr->getptr());
+        kleines_root =
+            std::make_unique<Sprite>("kleines root", kleines_ptr->getptr());
+        for (int i = 0; i < 512; i++) {
+            auto c = kleines_root->add_child<Sprite>(
+                "kleines child", kleines_ptr->getptr());
+
+            c->set_pos({ (rand() % 300)-150, (rand() % 300)-150 });
+            c->set_scale({0.5f, 0.5f});
+            // c->set_color({1,1,1,0.2});  
+        }
+        kleines_child = kleines_root->add_child<Sprite>("kleines child",
+                                                        kleines_ptr->getptr());
 
         kleines_child->set_pos({200, 0});
-        kleines_child->set_scale({0.5f, 0.5f});
+        kleines_child->set_scale({0.2f, 0.2f});
+        kleines_child->set_color({1,1,1,0.2});
+
     }
 
     void update(double dt) override {
@@ -88,33 +99,34 @@ class MyGame : public Context {
     }
 
     void draw() override {
-        renderer.push_quad({0, 0}, {64, 64}, {0.5,0.5,1,1}, kleines_ptr->get_id());
+        renderer.push_quad({0, 0}, {64, 64}, {0.5, 0.5, 1, 1},
+                           kleines_ptr->get_id());
         kleines_root->_draw();
 
-        ImGui::Begin("Kleines");
+        // ImGui::Begin("Kleines");
 
-        ImGui::SeparatorText("Camera");
-        ImGui::Text("Position: [%f, %f]", cam.position.x, cam.position.y);
-        ImGui::Text("Rotation: %f", cam.rotation);
+        // ImGui::SeparatorText("Camera");
+        // ImGui::Text("Position: [%f, %f]", cam.position.x, cam.position.y);
+        // ImGui::Text("Rotation: %f", cam.rotation);
 
-        ImGui::SeparatorText("Kleines");
-        ImGui::SliderFloat("Separation", &separation, -200.0f, 200.0f);
+        // ImGui::SeparatorText("Kleines");
+        // ImGui::SliderFloat("Separation", &separation, -200.0f, 200.0f);
 
-        ImGui::SeparatorText("SoLoud");
-        ImGui::InputText("Path", speak_buffer, speak_size);
+        // ImGui::SeparatorText("SoLoud");
+        // ImGui::InputText("Path", speak_buffer, speak_size);
 
-        if (ImGui::Button("Play!") && !speak_already_pressed) {
-            on_talk_press();
-            speak_already_pressed = true;
-        } else {
-            speak_already_pressed = false;
-        }
+        // if (ImGui::Button("Play!") && !speak_already_pressed) {
+        //     on_talk_press();
+        //     speak_already_pressed = true;
+        // } else {
+        //     speak_already_pressed = false;
+        // }
 
-        ImGui::End();
+        // ImGui::End();
     }
 };
 
-int main(int, char**)  {
+int main(int, char **) {
     printf("The project name is %s\n", PROJECT_NAME);
 
     auto game = std::make_shared<MyGame>(320, 240, "microvidya");
