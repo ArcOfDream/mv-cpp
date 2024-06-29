@@ -3,7 +3,10 @@
 #define _USE_MATH_DEFINES
 
 #include "imgui.h"
+#include "mv/graphics/fontrender.h"
+// #include "fontstash.h"
 #include "mv/mv.h"
+// #include "mv/gl.h"
 #include "soloud.h"
 #include "soloud_error.h"
 #include "soloud_freeverbfilter.h"
@@ -31,6 +34,8 @@ class MyGame : public Context {
     std::unique_ptr<Sprite> kleines_root;
     Sprite *kleines_child = nullptr;
 
+    FontRender f;
+
     Camera2D cam;
     float time = 0.0f;
     float separation = 0.0f;
@@ -53,7 +58,7 @@ class MyGame : public Context {
     }
 
     void init() override {
-        set_target_fps(30);
+        set_target_fps(60);
         kleines_ptr =
             load_texture_from_source("kleines", kleines_png, kleines_png_size);
 
@@ -66,20 +71,22 @@ class MyGame : public Context {
         kleines_root =
             std::make_unique<Sprite>("kleines root", kleines_ptr->getptr());
         for (int i = 0; i < 512; i++) {
-            auto c = kleines_root->add_child<Sprite>(
-                "kleines child", kleines_ptr->getptr());
+            auto c = kleines_root->add_child<Sprite>("kleines child",
+                                                     kleines_ptr->getptr());
 
-            c->set_pos({ (rand() % 300)-150, (rand() % 300)-150 });
+            c->set_pos({(rand() % 1500) - 750, (rand() % 1500) - 750});
             c->set_scale({0.5f, 0.5f});
-            // c->set_color({1,1,1,0.2});  
+            // c->set_color({1,1,1,0.2});
         }
         kleines_child = kleines_root->add_child<Sprite>("kleines child",
                                                         kleines_ptr->getptr());
 
         kleines_child->set_pos({200, 0});
         kleines_child->set_scale({0.2f, 0.2f});
-        kleines_child->set_color({1,1,1,0.2});
+        kleines_child->set_color({1, 1, 1, 0.2});
 
+        f = {256, 256};
+        f.setup_context();
     }
 
     void update(double dt) override {
@@ -103,6 +110,12 @@ class MyGame : public Context {
                            kleines_ptr->get_id());
         kleines_root->_draw();
 
+        // fonsDrawDebug(f.ctx, -256, -256);
+
+        fonsSetFont(f.ctx, 0);
+        fonsSetSize(f.ctx, 16);
+        // fonsSetAlign(f.ctx, FONS_ALIGN_LEFT);
+        fonsDrawText(f.ctx, 0, 0, "methinks this should be ok\\!", "\\!");
         // ImGui::Begin("Kleines");
 
         // ImGui::SeparatorText("Camera");

@@ -762,7 +762,12 @@ FONScontext* fonsCreateInternal(FONSparams* params)
 	if (stash->scratch == NULL) goto error;
 
 	// Initialize implementation library
+	#ifdef FONS_USE_FREETYPE
+	if (!fons__tt_init()) goto error;
+	#else
 	if (!fons__tt_init(stash)) goto error;
+	#endif
+
 
 	if (stash->params.renderCreate != NULL) {
 		if (stash->params.renderCreate(stash->params.userPtr, stash->params.width, stash->params.height) == 0)
