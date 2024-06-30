@@ -69,7 +69,7 @@ class MyGame : public Context {
 
         kleines_root =
             std::make_unique<Sprite>("kleines root", kleines_ptr->getptr());
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 512; i++) {
             auto c = kleines_root->add_child<Sprite>("kleines child",
                                                      kleines_ptr->getptr());
 
@@ -127,26 +127,26 @@ class MyGame : public Context {
 
         fonsDrawText(f.ctx, 0, 8, str, nullptr);
 
-        ImGui::Begin("Kleines");
+        // ImGui::Begin("Kleines");
 
-        ImGui::SeparatorText("Camera");
-        ImGui::Text("Position: [%f, %f]", cam.position.x, cam.position.y);
-        ImGui::Text("Rotation: %f", cam.rotation);
+        // ImGui::SeparatorText("Camera");
+        // ImGui::Text("Position: [%f, %f]", cam.position.x, cam.position.y);
+        // ImGui::Text("Rotation: %f", cam.rotation);
 
-        ImGui::SeparatorText("Kleines");
-        ImGui::SliderFloat("Separation", &separation, -200.0f, 200.0f);
+        // ImGui::SeparatorText("Kleines");
+        // ImGui::SliderFloat("Separation", &separation, -200.0f, 200.0f);
 
-        ImGui::SeparatorText("SoLoud");
-        ImGui::InputText("Path", speak_buffer, speak_size);
+        // ImGui::SeparatorText("SoLoud");
+        // ImGui::InputText("Path", speak_buffer, speak_size);
 
-        if (ImGui::Button("Play!") && !speak_already_pressed) {
-            on_talk_press();
-            speak_already_pressed = true;
-        } else {
-            speak_already_pressed = false;
-        }
+        // if (ImGui::Button("Play!") && !speak_already_pressed) {
+        //     on_talk_press();
+        //     speak_already_pressed = true;
+        // } else {
+        //     speak_already_pressed = false;
+        // }
 
-        ImGui::End();
+        // ImGui::End();
     }
 };
 

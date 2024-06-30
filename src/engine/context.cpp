@@ -46,9 +46,9 @@ Context::~Context() {
 }
 
 void Context::engine_init() {
-#ifdef __unix__
-    SDL_SetHint(SDL_HINT_VIDEODRIVER, "wayland,x11");
-#endif
+// #ifdef __unix__
+//     SDL_SetHint(SDL_HINT_VIDEODRIVER, "wayland,x11");
+// #endif
     // SDL init
     int result = SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO|SDL_INIT_EVENTS);
     assert(result == 0);
@@ -72,7 +72,8 @@ void Context::engine_init() {
     assert(gl_context);
 
     SDL_GL_MakeCurrent(window, gl_context);
-    SDL_GL_SetSwapInterval(-1);
+    int swap = SDL_GL_SetSwapInterval(-1);
+    if( swap != 0 ) SDL_GL_SetSwapInterval(1);
 
     // renderer init
     renderer.init();
@@ -126,8 +127,10 @@ void Context::run() {
         {
             std::unique_lock<std::mutex> lock(mutex);
             cv_main.wait(lock, [this]() { return !draw_ready || draw_complete; });
+
             engine_input();
             engine_update(delta_time);
+
             draw_ready = true;
             draw_complete = false;
         }
