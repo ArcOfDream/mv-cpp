@@ -11,6 +11,7 @@
 #include <SDL2/SDL_video.h>
 #include <assert.h>
 #include <memory>
+#include <mutex>
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -30,6 +31,8 @@ Context::Context(int width, int height, std::string title) {
 }
 
 Context::~Context() {
+    stop();
+
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL2_Shutdown();
     ImGui::DestroyContext();
@@ -43,9 +46,9 @@ Context::~Context() {
 }
 
 void Context::engine_init() {
-// #ifdef __unix__
-//     SDL_SetHint(SDL_HINT_VIDEODRIVER, "wayland,x11");
-// #endif
+#ifdef __unix__
+    SDL_SetHint(SDL_HINT_VIDEODRIVER, "wayland,x11");
+#endif
     // SDL init
     int result = SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO|SDL_INIT_EVENTS);
     assert(result == 0);
@@ -57,6 +60,7 @@ void Context::engine_init() {
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
 
     window = SDL_CreateWindow(
         window_title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
@@ -68,6 +72,7 @@ void Context::engine_init() {
     assert(gl_context);
 
     SDL_GL_MakeCurrent(window, gl_context);
+    SDL_GL_SetSwapInterval(-1);
 
     // renderer init
     renderer.init();
@@ -91,16 +96,25 @@ void Context::engine_init() {
 }
 
 void Context::run() {
-    SDL_ShowWindow(window);
+    SDL_GL_MakeCurrent(window, nullptr);
 
     unsigned long old_time = SDL_GetTicks();
     unsigned long runtime_fps = 0;
-    unsigned long step_time = 0;
+    unsigned long step_time = old_time;
     double delta_time = 0;
 
+    draw_running = true;
+    draw_thread = std::thread( &Context::draw_loop, this);
+
     while (true) {
-        if (should_close) {
-            break;
+        {
+            std::lock_guard<std::mutex> lock(mutex);
+            if (should_close) {
+                draw_running = false;
+                draw_ready = true;
+                cv.notify_one();
+                break;
+            }
         }
 
         unsigned long new_time = SDL_GetTicks();
@@ -109,17 +123,18 @@ void Context::run() {
         delta_time = (double)(new_time - step_time) * 0.001;
         step_time = new_time;
 
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplSDL2_NewFrame();
-        ImGui::NewFrame();
-        // ImGui::ShowDemoWindow();
-
-        engine_input();
-        engine_update(delta_time);
-        engine_draw();
+        {
+            std::unique_lock<std::mutex> lock(mutex);
+            cv_main.wait(lock, [this]() { return !draw_ready || draw_complete; });
+            engine_input();
+            engine_update(delta_time);
+            draw_ready = true;
+            draw_complete = false;
+        }
+        cv.notify_one();
 
         runtime_fps++;
-        SDL_Delay(min_ticks);
+        // SDL_Delay(min_ticks);
 
         if (time_since_frame > 1000) {
             old_time = new_time;
@@ -128,11 +143,50 @@ void Context::run() {
         }
     }
 
+    draw_thread.join();
+
     exit();
     // Destroy phase
     // SDL_GL_DeleteContext(gl_context);
     // SDL_DestroyWindow(window);
     // SDL_Quit();
+}
+
+void Context::draw_loop() {
+    SDL_ShowWindow(window);
+    if (SDL_GL_MakeCurrent(window, gl_context) != 0) {
+        printf("Failed to make OpenGL context current in draw thread: %s\n", SDL_GetError());
+        return;
+    }
+
+    while (draw_running) {
+        {
+            std::unique_lock<std::mutex> lock(mutex);
+            cv.wait(lock, [this]() { return draw_ready && !draw_complete; });
+
+            if (!draw_running) break;
+
+            // draw_running = false;
+            ImGui_ImplOpenGL3_NewFrame();
+            ImGui_ImplSDL2_NewFrame();
+            ImGui::NewFrame();
+
+            engine_draw();
+
+            draw_complete = true;
+        }
+        cv_main.notify_one();
+        // SDL_Delay(min_ticks);
+    }
+}
+
+void Context::stop() {
+    {
+        std::lock_guard<std::mutex> lock(mutex);
+        draw_running = false;
+        draw_ready = true;
+    }
+    cv.notify_one();
 }
 
 void Context::engine_input() {

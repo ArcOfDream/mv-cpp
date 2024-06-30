@@ -69,7 +69,7 @@ class MyGame : public Context {
 
         kleines_root =
             std::make_unique<Sprite>("kleines root", kleines_ptr->getptr());
-        for (int i = 0; i < 128; i++) {
+        for (int i = 0; i < 100; i++) {
             auto c = kleines_root->add_child<Sprite>("kleines child",
                                                      kleines_ptr->getptr());
 
@@ -110,6 +110,9 @@ class MyGame : public Context {
     }
 
     void draw() override {
+        char str[20];
+        snprintf(str, sizeof(str), "fps: %i", get_fps());
+
         renderer.push_quad({0, 0}, {64, 64}, {0.5, 0.5, 1, 1},
                            kleines_ptr->get_id());
         kleines_root->_draw();
@@ -120,27 +123,30 @@ class MyGame : public Context {
         fonsSetSize(f.ctx, 8);
         // fonsSetBlur(f.ctx, 2);
         fonsSetAlign(f.ctx, FONS_ALIGN_CENTER);
-        fonsDrawText(f.ctx, 0, 0, "methinks this should be ok\\!", "\\!");
-        // ImGui::Begin("Kleines");
+        fonsDrawText(f.ctx, 0, 0, "methinks this should be ok", nullptr);
 
-        // ImGui::SeparatorText("Camera");
-        // ImGui::Text("Position: [%f, %f]", cam.position.x, cam.position.y);
-        // ImGui::Text("Rotation: %f", cam.rotation);
+        fonsDrawText(f.ctx, 0, 8, str, nullptr);
 
-        // ImGui::SeparatorText("Kleines");
-        // ImGui::SliderFloat("Separation", &separation, -200.0f, 200.0f);
+        ImGui::Begin("Kleines");
 
-        // ImGui::SeparatorText("SoLoud");
-        // ImGui::InputText("Path", speak_buffer, speak_size);
+        ImGui::SeparatorText("Camera");
+        ImGui::Text("Position: [%f, %f]", cam.position.x, cam.position.y);
+        ImGui::Text("Rotation: %f", cam.rotation);
 
-        // if (ImGui::Button("Play!") && !speak_already_pressed) {
-        //     on_talk_press();
-        //     speak_already_pressed = true;
-        // } else {
-        //     speak_already_pressed = false;
-        // }
+        ImGui::SeparatorText("Kleines");
+        ImGui::SliderFloat("Separation", &separation, -200.0f, 200.0f);
 
-        // ImGui::End();
+        ImGui::SeparatorText("SoLoud");
+        ImGui::InputText("Path", speak_buffer, speak_size);
+
+        if (ImGui::Button("Play!") && !speak_already_pressed) {
+            on_talk_press();
+            speak_already_pressed = true;
+        } else {
+            speak_already_pressed = false;
+        }
+
+        ImGui::End();
     }
 };
 
