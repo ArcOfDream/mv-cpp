@@ -1,7 +1,6 @@
-#define GLM_FORCE_PURE
-
 #include "mv/graphics/shader.h"
 #include "mv/gl.h"
+#include "mv/config.h"
 #include <assert.h>
 #include <fstream>
 #include <glm/glm.hpp>
@@ -10,8 +9,6 @@
 #include <string.h>
 #include <string>
 #include <vector>
-
-#define MAX_LOG_SIZE 250
 
 namespace mv {
 
