@@ -89,8 +89,6 @@ class MyGame : public Context {
 
         f = {256, 256};
         f.setup_context();
-        f = {256, 256};
-        f.setup_context();
     }
 
     void update(double dt) override {
