@@ -1,6 +1,3 @@
 [submodule "subprojects/imgui"]
 	path = subprojects/imgui
 	url = https://github.com/ArcOfDream/imgui
-[submodule "subprojects/sol"]
-	path = subprojects/sol
-	url = https://github.com/ThePhD/sol2
