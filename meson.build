@@ -13,29 +13,38 @@ l_args = []
 imgui_project = subproject('imgui')
 soloud_project = subproject('soloud')
 pxtone_project = subproject('libpxtone')
-sol_project = subproject('sol')
+# sol_project = subproject('sol')
+
+include_dirs = include_directories('include')
+includes = [include_dirs]
+includes += imgui_project.get_variable('imgui_inc')
+includes += soloud_project.get_variable('soloud_inc')
+includes += pxtone_project.get_variable('pxtone_inc')
 
 deps = [
-  dependency('sdl2'),
-  dependency('SDL2_image'),
-  dependency('glm'),
-  # dependency('ogg'),
-  dependency('lua'),
-  dependency('freetype2'),
   imgui_project.get_variable('lib_imgui_dep'),
   soloud_project.get_variable('lib_soloud_dep'),
   pxtone_project.get_variable('lib_pxtone_dep'),
-  sol_project.get_variable('sol2_dep'),
+  dependency('glm'),
+  dependency('threads'),
+  dependency('lua'),
 ]
 
+if target_machine.system() not in ['emscripten']
+  deps += dependency('SDL2_image')
+  deps += dependency('freetype2')
+endif
+
 if get_option('use_pure_gles2')
-  if target_machine.system() != 'windows'
+  if target_machine.system() not in ['windows', 'emscripten']
     deps += dependency('glesv2')
   else
-    l_args += '-L' + meson.global_source_root() + '/lib'
-    l_args += '-llibSDL2'
-    l_args += '-llibGLESv2'
-    l_args += '-llibEGL'
+    if target_machine.system() in ['windows']
+      l_args += '-L' + meson.global_source_root() + '/lib'
+      l_args += '-llibSDL2'
+      l_args += '-llibGLESv2'
+      l_args += '-llibEGL'
+    endif
   endif
   add_project_arguments('-DMV_USE_PURE_GLES2', language: ['cpp', 'c'])
 else
@@ -46,12 +55,6 @@ else
   # l_args += '-llibEGL'
 endif
 
-include_dirs = include_directories('include')
-includes = [include_dirs]
-
-includes += imgui_project.get_variable('imgui_inc')
-includes += soloud_project.get_variable('soloud_inc')
-includes += pxtone_project.get_variable('pxtone_inc')
 
 sources = [
   'src/engine/audio/pxtone_source.cpp',

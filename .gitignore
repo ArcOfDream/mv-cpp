@@ -9,7 +9,7 @@ imgui.ini
 *.log
 *.dxvk-cache
 
-/subprojects/lua.wrap
+# /subprojects/lua.wrap
 /subprojects/packagecache/
 /subprojects/libepoxy*/
 /subprojects/lua*/

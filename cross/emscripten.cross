@@ -10,7 +10,7 @@ strip = 'emstrip'
 # pkg-config path to the hacked emprefix path. I dunno,
 # this is just weird because Emscripten and pkg-config
 # don't seem to play very nice together.
-pkg-config = ['emmake', 'env', 'PKG_CONFIG_PATH=/usr/lib/pkgconfig', 'pkg-config']
+# pkg-config = ['emmake', 'env', 'PKG_CONFIG_PATH=/usr/lib/pkgconfig', 'pkg-config']
 
 # Also a bit of a hack these two. Maybe Meson could
 # figure these out on its own.
@@ -26,6 +26,14 @@ exe_wrapper = 'node'
 # Emscripten always needs an exe wrapper. Again,
 # maybe Meson could just know this.
 needs_exe_wrapper = true
+
+sys_root = '$HOME/.emscripten_cache/sysroot'
+
+[built-in options]
+c_args = ['--use-port=sdl2', '--use-port=sdl2_image', '--use-port=ogg', '--use-port=freetype', '-pthread']
+c_link_args = c_args
+cpp_args = c_args
+cpp_link_args = c_link_args
 
 [host_machine]
 system = 'emscripten'
