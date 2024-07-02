@@ -1,14 +1,14 @@
 #include "resource.h"
 #include "mv/graphics/shader.h"
 #include <vector>
-#include <map>
+#include <unordered_map>
 
 #pragma once
 
 namespace mv {
 
 class Material : public IResource {
-    std::map<std::string, ShaderUniform> uniforms;
+    std::unordered_map<std::string, UniformBase> uniforms;
 public:
     Shader &shader;
 

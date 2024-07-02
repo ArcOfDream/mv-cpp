@@ -89,13 +89,13 @@ void Shader::set_shader_program(GLuint pid) { id = pid; }
 
 GLuint Shader::get_id() { return id; }
 
-std::vector<ShaderUniform> Shader::get_uniforms() { return uniforms; }
+std::vector<UniformBase> &Shader::get_uniforms() { return uniforms; }
 
 void Shader::set_bool(const std::string &name, bool value) const {
     glUniform1i(glGetUniformLocation(id, name.c_str()), (int)value);
 };
 
-void Shader::set_bool(const ShaderUniform &u, bool value) const {
+void Shader::set_bool(ShaderUniform<bool> &u, bool value) const {
     glUniform1i(u.location, (int)value);
 };
 
@@ -103,7 +103,7 @@ void Shader::set_int(const std::string &name, int value) const {
     glUniform1i(glGetUniformLocation(id, name.c_str()), value);
 };
 
-void Shader::set_int(const ShaderUniform &u, int value) const {
+void Shader::set_int(ShaderUniform<int> &u, int value) const {
     glUniform1i(u.location, value);
 };
 
@@ -123,7 +123,7 @@ void Shader::set_float(const std::string &name, float value) const {
     glUniform1f(glGetUniformLocation(id, name.c_str()), value);
 };
 
-void Shader::set_float(const ShaderUniform &u, float value) const {
+void Shader::set_float(ShaderUniform<float> &u, float value) const {
     glUniform1f(u.location, value);
 };
 
@@ -131,7 +131,7 @@ void Shader::set_vec2(const std::string &name, const glm::vec2 &value) const {
     glUniform2f(glGetUniformLocation(id, name.c_str()), value.x, value.y);
 };
 
-void Shader::set_vec2(const ShaderUniform &u, const glm::vec2 &value) const {
+void Shader::set_vec2(ShaderUniform<glm::vec2> &u, const glm::vec2 &value) const {
     glUniform2f(u.location, value.x, value.y);
 };
 
@@ -140,7 +140,7 @@ void Shader::set_vec3(const std::string &name, const glm::vec3 &value) const {
                 value.z);
 };
 
-void Shader::set_vec3(const ShaderUniform &u, const glm::vec3 &value) const {
+void Shader::set_vec3(ShaderUniform<glm::vec3> &u, const glm::vec3 &value) const {
     glUniform3f(u.location, value.x, value.y, value.z);
 };
 
@@ -149,7 +149,7 @@ void Shader::set_vec4(const std::string &name, const glm::vec4 &value) const {
                 value.z, value.w);
 };
 
-void Shader::set_vec4(const ShaderUniform &u, const glm::vec4 &value) const {
+void Shader::set_vec4(ShaderUniform<glm::vec4> &u, const glm::vec4 &value) const {
     glUniform4f(u.location, value.x, value.y, value.z, value.w);
 };
 
@@ -158,7 +158,7 @@ void Shader::set_mat3(const std::string &name, const glm::mat3 &mat) const {
                        &mat[0][0]);
 };
 
-void Shader::set_mat3(const ShaderUniform &u, const glm::mat3 &mat) const {
+void Shader::set_mat3(ShaderUniform<glm::mat3> &u, const glm::mat3 &mat) const {
     glUniformMatrix3fv(u.location, 1, GL_FALSE, &mat[0][0]);
 };
 

@@ -1,12 +1,16 @@
 
 #include "mv/graphics/fontrender.h"
+#include <string>
 
 #define FONTSTASH_IMPLEMENTATION
+
+#ifdef MV_USE_FREETYPE
 #define FONS_USE_FREETYPE
 #include <ft2build.h>
+#endif
+
 #include "fontstash.h"
 
-#include "mv/binary/slkscr.h"
 #include "mv/gl.h"
 #include "mv/graphics/renderer.h"
 
@@ -43,8 +47,16 @@ void FontRender::setup_context() {
         render_delete,
         push_quad};
     ctx = fonsCreateInternal(&params);
+}
 
-    fonsAddFontMem(ctx, "silkscreen", (unsigned char*)slkscr_ttf, slkscr_ttf_size, 0);
+void FontRender::font(std::string name) {
+    if(fonts.find(name) != fonts.end())
+        fonsSetFont(ctx, fonts[name]);
+}
+
+int FontRender::add_font_mem(std::string name, const unsigned char *data, const long size) {
+    fonts[name] = fonsAddFontMem(ctx, name.c_str(), (unsigned char*)data, size, 0);
+    return fonts[name];
 }
 
 int render_create(void *ptr, int w, int h) {

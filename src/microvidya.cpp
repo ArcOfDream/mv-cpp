@@ -69,15 +69,14 @@ class MyGame : public Context {
 
         kleines_root =
             std::make_unique<Sprite>("kleines root", kleines_ptr->getptr());
-        for (int i = 0; i < 512; i++) {
+        for (int i = 0; i < 100000; i++) {
             auto c = kleines_root->add_child<Sprite>("kleines child",
                                                      kleines_ptr->getptr());
 
             c->set_pos({(rand() % 1500) - 750, (rand() % 1500) - 750});
             c->set_pos({(rand() % 1500) - 750, (rand() % 1500) - 750});
             c->set_scale({0.5f, 0.5f});
-            // c->set_color({1,1,1,0.2});
-            // c->set_color({1,1,1,0.2});
+            c->set_color({1,1,1,0.2});
         }
         kleines_child = kleines_root->add_child<Sprite>("kleines child",
                                                         kleines_ptr->getptr());
@@ -85,10 +84,13 @@ class MyGame : public Context {
         kleines_child->set_pos({200, 0});
         kleines_child->set_scale({0.2f, 0.2f});
         kleines_child->set_color({1, 1, 1, 0.2});
-        kleines_child->set_color({1, 1, 1, 0.2});
+
 
         f = {256, 256};
         f.setup_context();
+        f.add_font_mem("pixo", Pixolletta8px_ttf, Pixolletta8px_ttf_size);
+        f.add_font_mem("silkscreen", slkscr_ttf, slkscr_ttf_size);
+
     }
 
     void update(double dt) override {
@@ -115,16 +117,16 @@ class MyGame : public Context {
                            kleines_ptr->get_id());
         kleines_root->_draw();
 
-        // fonsDrawDebug(f.ctx, -256, -256);
         f.color = {1, 1, 0, 1};
-        fonsSetFont(f.ctx, 0);
-        fonsSetSize(f.ctx, 8);
+        f.font("pixo");
+        fonsSetSize(f.ctx, 16);
         // fonsSetBlur(f.ctx, 2);
         fonsSetAlign(f.ctx, FONS_ALIGN_CENTER);
         fonsDrawText(f.ctx, 0, 0, "methinks this should be ok", nullptr);
 
-        fonsDrawText(f.ctx, 0, 8, str, nullptr);
+        fonsDrawText(f.ctx, 0, 16, str, nullptr);
 
+        fonsDrawDebug(f.ctx, -256, -256);
         // ImGui::Begin("Kleines");
 
         // ImGui::SeparatorText("Camera");

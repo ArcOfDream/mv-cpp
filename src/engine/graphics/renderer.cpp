@@ -1,3 +1,6 @@
+#include "mv/graphics/vertex.h"
+#include <GLES2/gl2.h>
+#include <cstddef>
 #define GLM_ENABLE_EXPERIMENTAL
 
 #include "mv/components/graphics.h"
@@ -31,6 +34,7 @@ void Renderer::init() {
     projection = glm::mat3(glm::ortho(0.0f, width, height, 0.0f));
 
     glEnable(GL_BLEND);
+    glDepthFunc(GL_NEVER);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 #ifdef MV_GL_DEBUG
@@ -85,9 +89,9 @@ void Renderer::flush_drawcalls() {
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
                               (void *)0);
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                              (void *)(2 * sizeof(float)));
+                              (void *)(offsetof(Vertex, uv)));
         glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                              (void *)(4 * sizeof(float)));
+                              (void *)(offsetof(Vertex, color)));
 
         glBufferSubData(GL_ARRAY_BUFFER, 0, dc.vertex_count * sizeof(Vertex),
                         dc.vertices);
@@ -103,7 +107,7 @@ void Renderer::flush_drawcalls() {
 
         dc.vertex_count = 0;
         dc.active_texture = 0;
-        dc.shader = std::make_shared<Shader>(default_shader);
+        dc.shader = default_shader;
     }
     total_verts = 0;
 }

@@ -71,6 +71,10 @@ void Context::engine_init() {
     gl_context = SDL_GL_CreateContext(window);
     assert(gl_context);
 
+    // instead of using SDL_Delay, we're going to limit the update rate
+    // to the screen refresh rate. 
+    // Though not all devices may support adaptive vsync, so we
+    // go ahead and try to use the vsync 
     SDL_GL_MakeCurrent(window, gl_context);
     int swap = SDL_GL_SetSwapInterval(-1);
     if( swap != 0 ) SDL_GL_SetSwapInterval(1);
@@ -93,11 +97,17 @@ void Context::engine_init() {
     ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
     ImGui_ImplOpenGL3_Init();
 
+    // sol2 init
+    lua.open_libraries(sol::lib::base, sol::lib::package, sol::lib::math, 
+                       sol::lib::string, sol::lib::table, sol::lib::ffi);
+    
+    // and the rest of init
     init();
 }
 
 void Context::run() {
     SDL_GL_MakeCurrent(window, nullptr);
+    SDL_ShowWindow(window);
 
     unsigned long old_time = SDL_GetTicks();
     unsigned long runtime_fps = 0;
@@ -156,7 +166,7 @@ void Context::run() {
 }
 
 void Context::draw_loop() {
-    SDL_ShowWindow(window);
+    SDL_ShowWindow(window); // it seems on some platforms this won't make the window show
     if (SDL_GL_MakeCurrent(window, gl_context) != 0) {
         printf("Failed to make OpenGL context current in draw thread: %s\n", SDL_GetError());
         return;

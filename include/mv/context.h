@@ -8,6 +8,7 @@
 #include <thread>
 #include <mutex>
 #include "soloud.h"
+#include "sol/sol.hpp"
 #include "graphics/renderer.h"
 #include "resource/resource.h"
 
@@ -35,6 +36,7 @@ class Context : public std::enable_shared_from_this<Context> {
   protected:
     Renderer &renderer = Renderer::get();
     SoLoud::Soloud soloud;
+    sol::state lua;
     SDL_GLContext gl_context;
     SDL_Window *window;
     

@@ -55,6 +55,17 @@ else
   # l_args += '-llibEGL'
 endif
 
+if get_option('use_freetype')
+  add_project_arguments('-DMV_USE_FREETYPE', language: ['cpp', 'c'])
+  deps += dependency('freetype2')
+endif
+
+include_dirs = include_directories('include')
+includes = [include_dirs]
+
+includes += imgui_project.get_variable('imgui_inc')
+includes += soloud_project.get_variable('soloud_inc')
+includes += pxtone_project.get_variable('pxtone_inc')
 
 sources = [
   'src/engine/audio/pxtone_source.cpp',

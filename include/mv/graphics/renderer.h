@@ -1,5 +1,3 @@
-#define GLM_FORCE_PURE
-
 #include "mv/gl.h"
 #include "camera2d.h"
 #include "drawcall.h"

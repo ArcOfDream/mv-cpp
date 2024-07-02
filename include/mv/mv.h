@@ -4,8 +4,9 @@
 #include "audio/pxtone_source.h"
 
 #include "binary/kleines.h"
-#include "binary/slkscr.h"
 #include "binary/cat.h"
+#include "binary/slkscr.h"
+#include "binary/pixolletta.h"
 
 #include "components/graphics.h"
 
