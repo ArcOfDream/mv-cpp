@@ -43,7 +43,6 @@ class MyGame : public Context {
     // unsigned int speak_handle = 0;
     unsigned int pxt_handle = 0;
     char speak_buffer[128] = "assets/pantest.ptcop";
-    size_t speak_size = sizeof(speak_buffer);
 
   public:
     using Context::Context;
@@ -69,7 +68,7 @@ class MyGame : public Context {
 
         kleines_root =
             std::make_unique<Sprite>("kleines root", kleines_ptr->getptr());
-        for (int i = 0; i < 100000; i++) {
+        for (int i = 0; i < 512; i++) {
             auto c = kleines_root->add_child<Sprite>("kleines child",
                                                      kleines_ptr->getptr());
 

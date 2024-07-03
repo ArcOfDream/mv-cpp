@@ -111,7 +111,24 @@ void Context::run() {
 
     draw_running = true;
     draw_thread = std::thread( &Context::draw_loop, this);
-    
+
+    #ifdef __EMSCRIPTEN__
+    emscripten_set_main_loop([this]() {
+        {
+            std::lock_guard<std::mutex> lock(mutex);
+            if (should_close) {
+                draw_running = false;
+                draw_ready = true;
+                cv.notify_one();
+                draw_thread.join();
+                exit();
+
+                emscripten_cancel_main_loop();
+            }
+        }
+        main_loop();
+    }, -1, 1);
+    #else
     while (true) {
         {
             std::lock_guard<std::mutex> lock(mutex);
@@ -123,14 +140,12 @@ void Context::run() {
             }
         }
         main_loop();
-        #ifdef __EMSCRIPTEN__
-        emscripten_sleep(0);
-        #endif
     }
 
     draw_thread.join();
 
     exit();
+    #endif
 }
 
 void Context::main_loop() {
@@ -160,6 +175,10 @@ void Context::main_loop() {
         fps = runtime_fps;
         runtime_fps = 0;
     }
+
+    #ifdef __EMSCRIPTEN__
+    emscripten_sleep(0);
+    #endif
 }
 
 void Context::draw_loop() {

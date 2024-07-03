@@ -1,4 +1,5 @@
-project('SoLoud', ['c', 'cpp'], default_options: ['default_library=static'])
+project('SoLoud', ['c', 'cpp'], 
+  default_options: ['default_library=static', 'warning_level=1'])
 
 # add_project_arguments('-DWITH_SDL2', language : ['cpp', 'c'])
 # add_project_arguments('-DWITH_SDL2_STATIC', language : 'cpp')

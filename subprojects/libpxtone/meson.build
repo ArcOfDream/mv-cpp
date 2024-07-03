@@ -1,7 +1,7 @@
 project(
   'libpxtone',
   ['c', 'cpp'],
-  default_options: ['default_library=static', 'warning_level=3', 'cpp_std=c++11'],
+  default_options: ['default_library=static', 'warning_level=1', 'cpp_std=c++11'],
 )
 
 add_project_arguments('-DpxINCLUDE_OGGVORBIS', language: ['cpp', 'c'])
