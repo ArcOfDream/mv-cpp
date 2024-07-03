@@ -30,7 +30,7 @@ needs_exe_wrapper = true
 sys_root = '$HOME/.emscripten_cache/sysroot'
 
 [built-in options]
-c_args = ['--use-port=sdl2', '--use-port=sdl2_image', '--use-port=ogg', '--use-port=freetype', '-pthread']
+c_args = ['--use-port=sdl2', '--use-port=sdl2_image', '--use-port=ogg', '--use-port=freetype', '-pthread', '-s', 'ASYNCIFY']
 c_link_args = c_args
 cpp_args = c_args
 cpp_link_args = c_link_args

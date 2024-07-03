@@ -8,7 +8,6 @@
 #include <thread>
 #include <mutex>
 #include "soloud.h"
-#include "sol/sol.hpp"
 #include "graphics/renderer.h"
 #include "resource/resource.h"
 
@@ -26,6 +25,10 @@ class Context : public std::enable_shared_from_this<Context> {
     unsigned int target_fps = 60;
     unsigned long min_ticks = 1000/target_fps;
     bool should_close = false;
+    unsigned long old_time = SDL_GetTicks();
+    unsigned long runtime_fps = 0;
+    unsigned long step_time = old_time;
+    double delta_time = 0;
 
 
     void engine_input();
@@ -36,7 +39,6 @@ class Context : public std::enable_shared_from_this<Context> {
   protected:
     Renderer &renderer = Renderer::get();
     SoLoud::Soloud soloud;
-    sol::state lua;
     SDL_GLContext gl_context;
     SDL_Window *window;
     
@@ -57,6 +59,7 @@ class Context : public std::enable_shared_from_this<Context> {
     void engine_init();
     void run();
     void stop();
+    void main_loop();
     void draw_loop();
 
     virtual void init() {};

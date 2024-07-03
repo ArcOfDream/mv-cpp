@@ -32,7 +32,6 @@ deps = [
 
 if target_machine.system() not in ['emscripten']
   deps += dependency('SDL2_image')
-  deps += dependency('freetype2')
 endif
 
 if get_option('use_pure_gles2')
@@ -41,7 +40,7 @@ if get_option('use_pure_gles2')
   else
     if target_machine.system() in ['windows']
       l_args += '-L' + meson.global_source_root() + '/lib'
-      l_args += '-llibSDL2'
+      # l_args += '-llibSDL2'
       l_args += '-llibGLESv2'
       l_args += '-llibEGL'
     endif
@@ -59,13 +58,6 @@ if get_option('use_freetype')
   add_project_arguments('-DMV_USE_FREETYPE', language: ['cpp', 'c'])
   deps += dependency('freetype2')
 endif
-
-include_dirs = include_directories('include')
-includes = [include_dirs]
-
-includes += imgui_project.get_variable('imgui_inc')
-includes += soloud_project.get_variable('soloud_inc')
-includes += pxtone_project.get_variable('pxtone_inc')
 
 sources = [
   'src/engine/audio/pxtone_source.cpp',
@@ -90,15 +82,29 @@ sources = [
   'src/microvidya.cpp',
 ]
 
-exe = executable(
-  'game',
-  sources,
-  dependencies: deps,
-  include_directories: includes,
-  install: true,
-  install_dir: './',
-  link_args: l_args,
-)
+if target_machine.system() in ['emscripten']
+  exe = executable(
+    'game',
+    sources,
+    dependencies: deps,
+    include_directories: includes,
+    install: true,
+    install_dir: './',
+    link_args: l_args,
+    name_suffix: 'html'
+  )
+else
+  exe = executable(
+    'game',
+    sources,
+    dependencies: deps,
+    include_directories: includes,
+    install: true,
+    install_dir: './',
+    link_args: l_args,
+  )
+endif
+
 
 install_subdir('assets', install_dir: './')
 

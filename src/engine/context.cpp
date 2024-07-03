@@ -98,8 +98,8 @@ void Context::engine_init() {
     ImGui_ImplOpenGL3_Init();
 
     // sol2 init
-    lua.open_libraries(sol::lib::base, sol::lib::package, sol::lib::math, 
-                       sol::lib::string, sol::lib::table, sol::lib::ffi);
+    // lua.open_libraries(sol::lib::base, sol::lib::package, sol::lib::math, 
+    //                    sol::lib::string, sol::lib::table, sol::lib::ffi);
     
     // and the rest of init
     init();
@@ -109,14 +109,9 @@ void Context::run() {
     SDL_GL_MakeCurrent(window, nullptr);
     SDL_ShowWindow(window);
 
-    unsigned long old_time = SDL_GetTicks();
-    unsigned long runtime_fps = 0;
-    unsigned long step_time = old_time;
-    double delta_time = 0;
-
     draw_running = true;
     draw_thread = std::thread( &Context::draw_loop, this);
-
+    
     while (true) {
         {
             std::lock_guard<std::mutex> lock(mutex);
@@ -127,42 +122,44 @@ void Context::run() {
                 break;
             }
         }
-
-        unsigned long new_time = SDL_GetTicks();
-        unsigned long time_since_frame = new_time - old_time;
-
-        delta_time = (double)(new_time - step_time) * 0.001;
-        step_time = new_time;
-
-        {
-            std::unique_lock<std::mutex> lock(mutex);
-            cv_main.wait(lock, [this]() { return !draw_ready || draw_complete; });
-
-            engine_input();
-            engine_update(delta_time);
-
-            draw_ready = true;
-            draw_complete = false;
-        }
-        cv.notify_one();
-
-        runtime_fps++;
-        // SDL_Delay(min_ticks);
-
-        if (time_since_frame > 1000) {
-            old_time = new_time;
-            fps = runtime_fps;
-            runtime_fps = 0;
-        }
+        main_loop();
+        #ifdef __EMSCRIPTEN__
+        emscripten_sleep(0);
+        #endif
     }
 
     draw_thread.join();
 
     exit();
-    // Destroy phase
-    // SDL_GL_DeleteContext(gl_context);
-    // SDL_DestroyWindow(window);
-    // SDL_Quit();
+}
+
+void Context::main_loop() {
+    unsigned long new_time = SDL_GetTicks();
+    unsigned long time_since_frame = new_time - old_time;
+
+    delta_time = (double)(new_time - step_time) * 0.001;
+    step_time = new_time;
+
+    {
+        std::unique_lock<std::mutex> lock(mutex);
+        cv_main.wait(lock, [this]() { return !draw_ready || draw_complete; });
+
+        engine_input();
+        engine_update(delta_time);
+
+        draw_ready = true;
+        draw_complete = false;
+    }
+    cv.notify_one();
+
+    runtime_fps++;
+    // SDL_Delay(min_ticks);
+
+    if (time_since_frame > 1000) {
+        old_time = new_time;
+        fps = runtime_fps;
+        runtime_fps = 0;
+    }
 }
 
 void Context::draw_loop() {
