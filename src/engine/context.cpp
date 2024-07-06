@@ -19,6 +19,15 @@
 #endif
 
 namespace mv {
+
+#ifdef __EMSCRIPTEN__
+void mv_em_main_loop(void *ctx) {
+    Context *c = (Context*)ctx;
+    c->em_try_exit();
+    c->main_loop();
+}
+#endif
+
 Context::Context() {
     window_width = 640;
     window_height = 480;
@@ -47,11 +56,11 @@ Context::~Context() {
 }
 
 void Context::engine_init() {
-// #ifdef __unix__
-//     SDL_SetHint(SDL_HINT_VIDEODRIVER, "wayland,x11");
-// #endif
+    // #ifdef __unix__
+    //     SDL_SetHint(SDL_HINT_VIDEODRIVER, "wayland,x11");
+    // #endif
     // SDL init
-    int result = SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO|SDL_INIT_EVENTS);
+    int result = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_EVENTS);
     assert(result == 0);
 
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
@@ -73,13 +82,16 @@ void Context::engine_init() {
     assert(gl_context);
 
     // instead of using SDL_Delay, we're going to limit the update rate
-    // to the screen refresh rate. 
+    // to the screen refresh rate.
     // Though not all devices may support adaptive vsync, so we
-    // go ahead and try to use the vsync 
+    // go ahead and try to use the vsync
+    #ifndef __EMSCRIPTEN__
     SDL_GL_MakeCurrent(window, gl_context);
     int swap = SDL_GL_SetSwapInterval(-1);
-    if( swap != 0 ) SDL_GL_SetSwapInterval(1);
-
+    if (swap != 0)
+        SDL_GL_SetSwapInterval(1);
+    #endif
+    
     // renderer init
     renderer.init();
     renderer.width = window_width;
@@ -99,12 +111,12 @@ void Context::engine_init() {
     ImGui_ImplOpenGL3_Init();
 
     // sol2 init
-    lua.open_libraries(sol::lib::base, sol::lib::package, sol::lib::math, 
+    lua.open_libraries(sol::lib::base, sol::lib::package, sol::lib::math,
                        sol::lib::string, sol::lib::table, sol::lib::ffi);
     register_glm_types(lua);
     register_resource_types(lua);
     register_node_types(lua);
-    
+
     // and the rest of init
     init();
 }
@@ -114,25 +126,11 @@ void Context::run() {
     SDL_ShowWindow(window);
 
     draw_running = true;
-    draw_thread = std::thread( &Context::draw_loop, this);
+    draw_thread = std::thread(&Context::draw_loop, this);
 
-    #ifdef __EMSCRIPTEN__
-    emscripten_set_main_loop([this]() {
-        {
-            std::lock_guard<std::mutex> lock(mutex);
-            if (should_close) {
-                draw_running = false;
-                draw_ready = true;
-                cv.notify_one();
-                draw_thread.join();
-                exit();
-
-                emscripten_cancel_main_loop();
-            }
-        }
-        main_loop();
-    }, -1, 1);
-    #else
+#ifdef __EMSCRIPTEN__
+    emscripten_set_main_loop_arg(&mv_em_main_loop, this, 0, true);
+#else
     while (true) {
         {
             std::lock_guard<std::mutex> lock(mutex);
@@ -149,7 +147,7 @@ void Context::run() {
     draw_thread.join();
 
     exit();
-    #endif
+#endif
 }
 
 void Context::main_loop() {
@@ -180,15 +178,16 @@ void Context::main_loop() {
         runtime_fps = 0;
     }
 
-    #ifdef __EMSCRIPTEN__
-    emscripten_sleep(0);
-    #endif
+#ifdef __EMSCRIPTEN__
+    // emscripten_sleep(0);
+#endif
 }
 
 void Context::draw_loop() {
     SDL_ShowWindow(window); // it seems on some platforms this won't make the window show
     if (SDL_GL_MakeCurrent(window, gl_context) != 0) {
-        printf("Failed to make OpenGL context current in draw thread: %s\n", SDL_GetError());
+        printf("Failed to make OpenGL context current in draw thread: %s\n",
+               SDL_GetError());
         return;
     }
 
@@ -197,7 +196,8 @@ void Context::draw_loop() {
             std::unique_lock<std::mutex> lock(mutex);
             cv.wait(lock, [this]() { return draw_ready && !draw_complete; });
 
-            if (!draw_running) break;
+            if (!draw_running)
+                break;
 
             // draw_running = false;
             ImGui_ImplOpenGL3_NewFrame();
@@ -211,6 +211,21 @@ void Context::draw_loop() {
         cv_main.notify_one();
         // SDL_Delay(min_ticks);
     }
+}
+
+void Context::em_try_exit() {
+    #ifdef __EMSCRIPTEN__
+    std::lock_guard<std::mutex> lock(mutex);
+    if (should_close) {
+        draw_running = false;
+        draw_ready = true;
+        cv.notify_one();
+        draw_thread.join();
+        exit();
+
+        emscripten_cancel_main_loop();
+    }
+    #endif
 }
 
 void Context::stop() {
@@ -246,7 +261,7 @@ void Context::engine_draw() {
     SDL_GetWindowSize(window, &window_width, &window_height);
     renderer.width = window_width;
     renderer.height = window_height;
-    
+
     renderer.clear_frame();
     renderer.begin_frame();
 

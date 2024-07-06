@@ -67,6 +67,7 @@ class Context : public std::enable_shared_from_this<Context> {
     void stop();
     void main_loop();
     void draw_loop();
+    void em_try_exit();
 
     virtual void init() {};
     virtual void input(SDL_Event&) {};
@@ -80,4 +81,9 @@ class Context : public std::enable_shared_from_this<Context> {
 
     int get_fps() { return fps; }
 };
+
+#ifdef __EMSCRIPTEN__
+void mv_em_main_loop(void *ctx);
+#endif
+
 } // namespace mv

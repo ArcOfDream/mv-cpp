@@ -90,7 +90,7 @@ sources = [
 
 if target_machine.system() in ['emscripten']
   exe = executable(
-    'game',
+    'index',
     sources,
     dependencies: deps,
     include_directories: includes,

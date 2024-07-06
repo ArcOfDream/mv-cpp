@@ -21,6 +21,10 @@
 #include <string>
 #include <unordered_map>
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
+
 float time_elapsed;
 
 using namespace mv;
@@ -184,6 +188,7 @@ int main(int, char **) {
     printf("The project name is %s\n", PROJECT_NAME);
 
     auto game = std::make_shared<MyGame>(320, 240, "microvidya");
+
 
     game->engine_init();
     game->run();
