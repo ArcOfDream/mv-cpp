@@ -10,6 +10,11 @@
 #include "soloud.h"
 #include "graphics/renderer.h"
 #include "resource/resource.h"
+#include "sol/sol.hpp"
+
+
+#define MAX_VERTEX_MEMORY 512 * 1024
+#define MAX_ELEMENT_MEMORY 128 * 1024
 
 #pragma once
 
@@ -41,6 +46,7 @@ class Context : public std::enable_shared_from_this<Context> {
     SoLoud::Soloud soloud;
     SDL_GLContext gl_context;
     SDL_Window *window;
+    sol::state lua;
     
     std::mutex mutex;
     std::condition_variable cv;

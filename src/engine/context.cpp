@@ -4,13 +4,14 @@
 #include "imgui_impl_sdl2.h"
 #include "mv/gl.h"
 #include "mv/graphics/renderer.h"
+#include "mv/scripting/register_types.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_hints.h>
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_video.h>
 #include <assert.h>
-#include <memory>
+// #include <memory>
 #include <mutex>
 
 #ifdef __EMSCRIPTEN__
@@ -98,8 +99,11 @@ void Context::engine_init() {
     ImGui_ImplOpenGL3_Init();
 
     // sol2 init
-    // lua.open_libraries(sol::lib::base, sol::lib::package, sol::lib::math, 
-    //                    sol::lib::string, sol::lib::table, sol::lib::ffi);
+    lua.open_libraries(sol::lib::base, sol::lib::package, sol::lib::math, 
+                       sol::lib::string, sol::lib::table, sol::lib::ffi);
+    register_glm_types(lua);
+    register_resource_types(lua);
+    register_node_types(lua);
     
     // and the rest of init
     init();

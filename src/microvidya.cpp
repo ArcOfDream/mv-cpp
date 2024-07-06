@@ -1,11 +1,13 @@
 #define PROJECT_NAME "microvidya"
 #define GLM_ENABLE_EXPERIMENTAL
 #define _USE_MATH_DEFINES
+#define SOL_ALL_SAFETIES_ON 1
 
-#include "imgui.h"
+// #include "imgui.h"
 // #include "fontstash.h"
 #include "mv/mv.h"
 #include "mv/graphics/fontrender.h"
+#include "imgui.h"
 #include "soloud.h"
 #include "soloud_error.h"
 #include "soloud_freeverbfilter.h"
@@ -68,14 +70,19 @@ class MyGame : public Context {
 
         kleines_root =
             std::make_unique<Sprite>("kleines root", kleines_ptr->getptr());
+
+        
         for (int i = 0; i < 512; i++) {
-            auto c = kleines_root->add_child<Sprite>("kleines child",
-                                                     kleines_ptr->getptr());
+            // auto c = kleines_root->add_child<Sprite>("kleines child",
+            //                                          kleines_ptr->getptr());
+            auto c = std::make_unique<Sprite>("kleines child", kleines_ptr->getptr());
 
             c->set_pos({(rand() % 1500) - 750, (rand() % 1500) - 750});
             c->set_pos({(rand() % 1500) - 750, (rand() % 1500) - 750});
             c->set_scale({0.5f, 0.5f});
             c->set_color({1,1,1,0.2});
+
+            kleines_root->add_instanced_child(c.release());
         }
         kleines_child = kleines_root->add_child<Sprite>("kleines child",
                                                         kleines_ptr->getptr());
@@ -84,12 +91,34 @@ class MyGame : public Context {
         kleines_child->set_scale({0.2f, 0.2f});
         kleines_child->set_color({1, 1, 1, 0.2});
 
+        lua.set("kleines_root", kleines_root.get());
+        lua.set("kleines_tex", kleines_ptr->getptr());
+
+        lua.script(R"(
+            CustomSprite = {}
+
+            function CustomSprite:update(dt)
+                self.angle_degrees = self.angle_degrees + 5
+            end
+
+            setmetatable(CustomSprite, {__index = Sprite})
+
+            my_node = CustomSprite.new("my_node", kleines_tex)
+            my_node.color = vec4(0, 1, 1, 1)
+            my_node.scale = vec2(0.5, 2.5)
+
+            kleines_root:add_instanced_child(my_node)
+        )");
+        
+        // can also do it like this
+        // Sprite &my_node = lua["my_node"];
+        // kleines_root->add_instanced_child(&my_node);
+
 
         f = {256, 256};
         f.setup_context();
         f.add_font_mem("pixo", Pixolletta8px_ttf, Pixolletta8px_ttf_size);
         f.add_font_mem("silkscreen", slkscr_ttf, slkscr_ttf_size);
-
     }
 
     void update(double dt) override {
@@ -126,26 +155,28 @@ class MyGame : public Context {
         fonsDrawText(f.ctx, 0, 16, str, nullptr);
 
         fonsDrawDebug(f.ctx, -256, -256);
-        // ImGui::Begin("Kleines");
+        
+        /* GUI */
+        ImGui::Begin("Kleines");
 
-        // ImGui::SeparatorText("Camera");
-        // ImGui::Text("Position: [%f, %f]", cam.position.x, cam.position.y);
-        // ImGui::Text("Rotation: %f", cam.rotation);
+        ImGui::SeparatorText("Camera");
+        ImGui::Text("Position: [%f, %f]", cam.position.x, cam.position.y);
+        ImGui::Text("Rotation: %f", cam.rotation);
 
-        // ImGui::SeparatorText("Kleines");
-        // ImGui::SliderFloat("Separation", &separation, -200.0f, 200.0f);
+        ImGui::SeparatorText("Kleines");
+        ImGui::SliderFloat("Separation", &separation, -200.0f, 200.0f);
 
-        // ImGui::SeparatorText("SoLoud");
-        // ImGui::InputText("Path", speak_buffer, speak_size);
+        ImGui::SeparatorText("SoLoud");
+        ImGui::InputText("Path", speak_buffer, 128);
 
-        // if (ImGui::Button("Play!") && !speak_already_pressed) {
-        //     on_talk_press();
-        //     speak_already_pressed = true;
-        // } else {
-        //     speak_already_pressed = false;
-        // }
+        if (ImGui::Button("Play!") && !speak_already_pressed) {
+            on_talk_press();
+            speak_already_pressed = true;
+        } else {
+            speak_already_pressed = false;
+        }
 
-        // ImGui::End();
+        ImGui::End();
     }
 };
 

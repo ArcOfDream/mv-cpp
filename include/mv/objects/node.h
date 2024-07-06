@@ -1,4 +1,5 @@
 #include "SDL_events.h"
+#include "sol/sol.hpp"
 #include <list>
 #include <memory>
 #include <string>
@@ -15,6 +16,7 @@ class Node {
     Node *parent = nullptr;
 
     Node(const char*);
+    Node(sol::this_state, const char*);
 
   template <typename T, typename... Targs>
   T* add_child(const Targs &...args) {
@@ -27,14 +29,28 @@ class Node {
     return ptr;
   }
 
-    virtual void _init() = 0;
-    virtual void _update(double) = 0;
-    virtual void _draw() = 0;
-    virtual void _input(SDL_Event&) = 0;
+  template <typename T>
+  T* add_instanced_child(T *what) {
+    static_assert(std::is_base_of<Node, T>::value, "T must derive from Node");
 
-    virtual void init() = 0;
-    virtual void update(double) = 0;
-    virtual void draw() = 0;
-    virtual void input(SDL_Event&) = 0;
+    what->parent = this;
+    children.emplace_back(std::unique_ptr<T>(what));
+    return what;
+  }
+
+    virtual void _init() {};
+    virtual void _update(double) {};
+    virtual void _draw() {};
+    virtual void _input(SDL_Event&) {};
+
+    virtual void init() {};
+    virtual void update(double) {};
+    virtual void draw() {};
+    virtual void input(SDL_Event&) {};
+
+    sol::function lua_init;
+    sol::function lua_update;
+    sol::function lua_draw;
+    sol::function lua_input;
 };
 } // namespace mv

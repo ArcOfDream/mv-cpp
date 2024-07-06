@@ -59,6 +59,10 @@ if get_option('use_freetype')
   deps += dependency('freetype2')
 endif
 
+if get_option('single_thread')
+  add_project_arguments('-DMV_SINGLE_THREAD', language: ['cpp', 'c'])
+endif
+
 sources = [
   'src/engine/audio/pxtone_source.cpp',
 
@@ -76,6 +80,8 @@ sources = [
   'src/engine/objects/sprite.cpp',
 
   'src/engine/resource/texture.cpp',
+
+  'src/engine/scripting/register_types.cpp',
 
   'src/engine/context.cpp',
 
