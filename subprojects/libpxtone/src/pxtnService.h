@@ -43,8 +43,8 @@ typedef bool (* pxtnSampledCallback)( void* user, const pxtnService* pxtn );
 class pxtnService: public pxtnData
 {
 private:
-	void operator = (const pxtnService& src){}
-	pxtnService     (const pxtnService& src){}
+	void operator = (const pxtnService&){}
+	pxtnService     (const pxtnService&){}
 
 	enum _enum_FMTVER
 	{

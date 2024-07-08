@@ -1,7 +1,7 @@
 #include "fontstash.h"
-#include "glm/vec4.hpp"
 #include <string>
 #include <unordered_map>
+#include "glm/vec4.hpp"
 
 
 #pragma once
@@ -13,7 +13,7 @@ struct FontRender {
     unsigned int tid = 0; // texture id
     glm::vec4 color = {1, 1, 1, 1};
 
-    std::unordered_map<std::string, int> fonts;
+    std::unordered_map<std::string, int> fonts = {};
 
     void delete_tex();
     void setup_context();

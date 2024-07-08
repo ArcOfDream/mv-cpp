@@ -19,7 +19,6 @@
 #include <memory>
 #include <stdio.h>
 #include <string>
-#include <unordered_map>
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>

@@ -15,8 +15,8 @@
 class pxtnOverDrive: public pxtnData
 {
 private:
-	void operator = (const pxtnOverDrive& src){}
-	pxtnOverDrive   (const pxtnOverDrive& src){}
+	void operator = (const pxtnOverDrive&){}
+	pxtnOverDrive   (const pxtnOverDrive&){}
 
 	bool  _b_played;
 

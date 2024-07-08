@@ -119,8 +119,8 @@ pxtnVOICETONE;
 class pxtnWoice: public pxtnData
 {
 private:
-	void operator = (const pxtnWoice& src){}
-	pxtnWoice       (const pxtnWoice& src){}
+	void operator = (const pxtnWoice&){}
+	pxtnWoice       (const pxtnWoice&){}
 
 	int32_t            _voice_num;
 

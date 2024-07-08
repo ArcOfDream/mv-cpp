@@ -8,8 +8,8 @@
 class pxtnMaster: public pxtnData
 {
 private:
-	void operator = (const pxtnMaster& src){}
-	pxtnMaster      (const pxtnMaster& src){}
+	void operator = (const pxtnMaster&){}
+	pxtnMaster      (const pxtnMaster&){}
 
 	int32_t _beat_num   ;
 	float   _beat_tempo ;

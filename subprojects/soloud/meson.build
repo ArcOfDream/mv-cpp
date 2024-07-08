@@ -1,7 +1,5 @@
 project('SoLoud', ['c', 'cpp'], 
   default_options: ['default_library=static', 'warning_level=1'])
-
-add_project_arguments('-DWITH_SDL2', language : ['cpp', 'c'])
 # add_project_arguments('-DWITH_SDL2_STATIC', language : 'cpp')
 # add_project_arguments('-DWITH_MINIAUDIO', language : 'cpp')
 # add_project_arguments('-DWITH_ALSA', language : 'cpp')
@@ -16,17 +14,10 @@ deps = [
 ]
 
 sources = [
-# backend
-# 'src/backend/alsa/soloud_alsa.cpp',
-
-'src/backend/miniaudio/soloud_miniaudio.cpp',
-
+# backends, including universally compileable ones here
 'src/backend/null/soloud_null.cpp',
 
 'src/backend/nosound/soloud_nosound.cpp',
-
-'src/backend/sdl/soloud_sdl2.cpp',
-'src/backend/sdl/soloud_sdl2_dll.c',
 
 #  'src/backend/sdl2_static/soloud_sdl2_static.cpp',
 
@@ -98,6 +89,38 @@ sources = [
 'src/core/soloud.cpp',
 
 ]
+
+if target_machine.system() not in ['windows', 'emscripten']
+  # we will try to exclude windows and emscripten from including the SDL2 backend for now
+  add_project_arguments('-DWITH_SDL2', language : ['cpp', 'c'])
+  sources += 'src/backend/sdl/soloud_sdl2.cpp'
+  sources += 'src/backend/sdl/soloud_sdl2_dll.c'
+
+  deps += dependency('sdl2')
+endif
+
+# If there's a system that can't compile this, we'll exclude it from using miniaudio.
+if target_machine.system() not in ['emscripten']
+  add_project_arguments('-DWITH_MINIAUDIO', language : ['cpp', 'c'])
+  sources += 'src/backend/miniaudio/soloud_miniaudio.cpp'
+endif
+
+if target_machine.system() in ['windows']
+  add_project_arguments('-DWITH_WINMM', language : ['cpp', 'c'])
+  sources += 'src/backend/winmm/soloud_winmm.cpp'
+endif
+
+if target_machine.system() in ['emscripten']
+  add_project_arguments('-DWITH_SDL_STATIC', language : ['cpp', 'c'])
+  sources += 'src/backend/sdl_static/soloud_sdl_static.cpp'
+endif
+
+if target_machine.system() in ['linux']
+  add_project_arguments('-DWITH_ALSA', language : ['cpp', 'c'])
+  sources += 'src/backend/alsa/soloud_alsa.cpp'
+
+  deps += dependency('alsa')
+endif
 
 lib_soloud = library('SoLoud', sources, include_directories: soloud_inc, dependencies: deps)
 lib_soloud_dep = declare_dependency(link_with: lib_soloud, include_directories: soloud_inc)

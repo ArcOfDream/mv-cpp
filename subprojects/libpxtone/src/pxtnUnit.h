@@ -11,8 +11,8 @@
 class pxtnUnit: public pxtnData
 {
 private:
-	void operator = (const pxtnUnit& src){}
-	pxtnUnit        (const pxtnUnit& src){}
+	void operator = (const pxtnUnit&){}
+	pxtnUnit        (const pxtnUnit&){}
 
 	bool     _bOperated;
 	bool     _bPlayed;

@@ -8,8 +8,8 @@
 class pxtnText: public pxtnData
 {
 private:
-	void operator = (const pxtnText& src){}
-	pxtnText        (const pxtnText& src){}
+	void operator = (const pxtnText&){}
+	pxtnText        (const pxtnText&){}
 
 	char*   _p_comment_buf;
 	int32_t _comment_size ;

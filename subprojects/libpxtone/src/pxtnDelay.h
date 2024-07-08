@@ -19,8 +19,8 @@ class pxtnDelay: public pxtnData
 {
 private:
 
-	void operator = (const pxtnDelay& src){}
-	pxtnDelay       (const pxtnDelay& src){}
+	void operator = (const pxtnDelay&){}
+	pxtnDelay       (const pxtnDelay&){}
 
 	bool      _b_played  ;
 	DELAYUNIT _unit      ;

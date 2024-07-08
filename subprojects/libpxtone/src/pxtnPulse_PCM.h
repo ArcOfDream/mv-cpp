@@ -6,8 +6,8 @@
 class pxtnPulse_PCM: public pxtnData
 {
 private:
-	void operator = (const pxtnPulse_PCM& src){}
-	pxtnPulse_PCM   (const pxtnPulse_PCM& src){}
+	void operator = (const pxtnPulse_PCM&){}
+	pxtnPulse_PCM   (const pxtnPulse_PCM&){}
 
 	int32_t _ch      ;
 	int32_t _sps     ;
