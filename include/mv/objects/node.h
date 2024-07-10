@@ -1,6 +1,7 @@
 #include "SDL_events.h"
 #include "sol/sol.hpp"
 #include <list>
+#include <lua.h>
 #include <memory>
 #include <string>
 
@@ -10,6 +11,12 @@ namespace mv {
 class Node {
   public:
     std::string name;
+
+    // Lua related stuff
+    lua_State *lua = nullptr;
+    std::unordered_map<std::string, sol::object> entries;
+    void lua_dynamic_set(std::string key, sol::stack_object value);
+    sol::object lua_dynamic_get(std::string key);
 
     // scene graph type of thing
     std::list<std::unique_ptr<Node>> children;
@@ -39,7 +46,7 @@ class Node {
   }
 
     virtual void _init() {};
-    virtual void _update(double) {};
+    virtual void _update(double);
     virtual void _draw() {};
     virtual void _input(SDL_Event&) {};
 

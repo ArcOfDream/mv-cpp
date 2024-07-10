@@ -73,22 +73,36 @@ void register_resource_types(sol::state &lua) {
 
 void register_node_types(sol::state &lua) {
     lua.new_usertype<Node>("Node",
-    sol::constructors<Node(const char*)>(),
-    "init", &Node::init,
-    "update", &Node::update,
-    "draw", &Node::draw,
-    "input", &Node::input,
+    sol::constructors<Node(sol::this_state, const char*), Node(const char*)>(),
+    sol::meta_function::index, &Node::lua_dynamic_get,
+    sol::meta_function::new_index, &Node::lua_dynamic_set,
+    sol::meta_function::length, [](Node& n) { return n.entries.size(); },
+    "init", &Node::lua_init,
+    "update", &Node::lua_update,
+    "draw", &Node::lua_draw,
+    "input", &Node::lua_input,
+
     "add_instanced_child", [](Node& node, Node *child) {
         return node.add_instanced_child<Node>(child);
     });
 
     lua.new_usertype<Sprite>("Sprite",
-    sol::constructors<Sprite(const char*), Sprite(const char*, std::shared_ptr<Texture>)>(),
+    sol::constructors<
+        Sprite(const char*), 
+        Sprite(const char*, std::shared_ptr<Texture>),
+        Sprite(sol::this_state, const char*),
+        Sprite(sol::this_state, const char*, std::shared_ptr<Texture>)
+    >(),
     sol::base_classes, sol::bases<Node>(),
-    // "init", &Sprite::init,
-    // "update", &Sprite::update,
-    // "draw", &Sprite::draw,
-    // "input", &Sprite::input,
+    sol::meta_function::index, &Sprite::lua_dynamic_get,
+    sol::meta_function::new_index, &Sprite::lua_dynamic_set,
+    sol::meta_function::length, [](Sprite& n) { return n.entries.size(); },
+    "init", &Sprite::lua_init,
+    "update", &Sprite::lua_update,
+    "draw", &Sprite::lua_draw,
+    "input", &Sprite::lua_input,
+
+
 
     "pos", sol::property(&Sprite::get_pos, &Sprite::set_pos),
     "offset", sol::property(&Sprite::get_offset, &Sprite::set_offset),
@@ -97,6 +111,7 @@ void register_node_types(sol::state &lua) {
     "angle_degrees", sol::property(&Sprite::get_angle_degrees, &Sprite::set_angle_degrees),
     "texture", sol::property(&Sprite::get_texture, &Sprite::set_texture),
     "color", sol::property(&Sprite::get_color, &Sprite::set_color),
+    "centered", sol::property(&Sprite::is_centered, &Sprite::set_centered),
     
     "set_pos", &Sprite::set_pos,
     "get_pos", &Sprite::get_pos,

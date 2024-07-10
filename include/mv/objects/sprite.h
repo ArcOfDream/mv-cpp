@@ -1,6 +1,7 @@
 #include "mv/graphics/vertex.h"
 #include "mv/objects/node.h"
 #include "mv/resource/texture.h"
+#include "sol/sol.hpp"
 #include <glm/glm.hpp>
 #include <memory>
 // #include <string>
@@ -32,11 +33,12 @@ class Sprite : public Node {
     // ctor
     using Node::Node;
     Sprite(const char*, std::shared_ptr<Texture>);
+    Sprite(sol::this_state, const char*, std::shared_ptr<Texture>);
 
     void flag_dirty(bool = true);
 
     void _init() {};
-    void _update(double);
+    // void _update(double);
     void _draw();
     void _input(SDL_Event&){};
 
