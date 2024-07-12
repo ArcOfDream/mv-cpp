@@ -1,32 +1,20 @@
-local a_timer = 0.0
-MySprite = {}
-MySprite.__index = MySprite
+a_timer = 0
 
--- setmetatable(MySprite, Sprite)
+an_update = function(self, dt)
+    a_timer = (a_timer + dt * 10)
+    print(string.format("timer: %f", a_timer))
 
-function MySprite.instance(...)
-    local self = Sprite.new(...)
-    self.update = MySprite.update
-    setmetatable(self.__metatable, MySprite)
-    return self
-end
-
-function MySprite:update(dt)
-    print("update from lua")
-    
-    a_timer = a_timer + dt
-    print(a_timer)
-
-    -- for some reason this doesn't want to work
-    self.pos = vec2(
-        sin(a_timer)*100,
-        cos(a_timer)*100
+    self.pos = Vec2( -- doesn't apply this change
+        math.sin(a_timer)*100,
+        math.cos(a_timer)*100
     )
+    print(string.format("pos: %f, %f", self.pos.x, self.pos.y))
 end
 
-my_node = MySprite.instance("my_node", kleines_tex)
-my_node.a_value = 1337
-my_node.some_vec = vec2(1, 2)
-print(my_node.a_value)
+my_node = Sprite.new("my_node", kleines_tex)
+
+my_node.pos = Vec2(20, 20) -- applies this change
+my_node.update = an_update
+
 
 kleines_root:add_instanced_child(my_node)

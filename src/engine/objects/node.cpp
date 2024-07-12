@@ -56,7 +56,7 @@ void Node::_update(double dt) {
     }
     if(lua) {
         // printf("calling update on %s\n", name.c_str());
-        lua_update.call<void>(this, dt);
+        lua_update(this,  dt);
         // sol::optional<sol::error> err = lua_update.call<sol::error>(this, dt);
         // if (err.has_value()) {
         //     printf("%s\n", err.value().what());

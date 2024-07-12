@@ -19,7 +19,7 @@ class Node {
     sol::object lua_dynamic_get(std::string key);
 
     // scene graph type of thing
-    std::list<std::unique_ptr<Node>> children;
+    std::list<std::shared_ptr<Node>> children;
     Node *parent = nullptr;
 
     Node(const char*);
@@ -29,10 +29,10 @@ class Node {
   T* add_child(const Targs &...args) {
     static_assert(std::is_base_of<Node, T>::value, "T must derive from Node");
 
-    auto c = std::make_unique<T>(args...);
+    auto c = std::make_shared<T>(args...);
     T* ptr = c.get();
     c->parent = this;
-    children.emplace_back(std::move(c));
+    children.emplace_back(c);
     return ptr;
   }
 
@@ -41,7 +41,7 @@ class Node {
     static_assert(std::is_base_of<Node, T>::value, "T must derive from Node");
 
     what->parent = this;
-    children.emplace_back(std::unique_ptr<T>(what));
+    children.emplace_back(std::shared_ptr<T>(what));
     return what;
   }
 

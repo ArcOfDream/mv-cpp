@@ -17,7 +17,8 @@
 namespace mv {
 
 void register_glm_types(sol::state &lua) {
-    lua.new_usertype<glm::vec2>("vec2",
+    // glm::vec2
+    lua.new_usertype<glm::vec2>("Vec2",
     sol::constructors<
         glm::vec2(), 
         glm::vec2(float),
@@ -25,8 +26,9 @@ void register_glm_types(sol::state &lua) {
     sol::call_constructor, [](float x, float y) { return glm::vec2{x, y}; },
     "x", &glm::vec2::x,
     "y", &glm::vec2::y);
-
-    lua.new_usertype<glm::vec3>("vec3",
+    
+    // glm::vec3
+    lua.new_usertype<glm::vec3>("Vec3",
     sol::constructors<
         glm::vec3(), 
         glm::vec3(float), 
@@ -37,8 +39,9 @@ void register_glm_types(sol::state &lua) {
     "x", &glm::vec3::x,
     "y", &glm::vec3::y,
     "z", &glm::vec3::z);
-
-    lua.new_usertype<glm::vec4>("vec4",
+    
+    // glm::vec4
+    lua.new_usertype<glm::vec4>("Vec4",
     sol::constructors<
         glm::vec4(), 
         glm::vec4(float), 
@@ -54,17 +57,24 @@ void register_glm_types(sol::state &lua) {
     "y", &glm::vec4::y,
     "z", &glm::vec4::z,
     "w", &glm::vec4::w);
-
-    lua.new_usertype<glm::mat3>("mat3",
+    
+    // glm::mat3
+    lua.new_usertype<glm::mat3>("Mat3",
     sol::constructors<
         glm::mat3(),
         glm::mat3(float)
     >());
+    
+    // TODO: expose more of GLM as needed
 }
 
 void register_resource_types(sol::state &lua) {
+    // mv:Texture
     lua.new_usertype<Texture>("Texture",
     sol::constructors<Texture(const char*)>());
+    
+    // TODO: expose mv::Material when ready 
+    // and provide a builder to build shaders from source
 
     lua.set_function("load_texture_from_source", load_texture_from_source);
     lua.set_function("load_texture_from_file", load_texture_from_file);
@@ -72,37 +82,42 @@ void register_resource_types(sol::state &lua) {
 }
 
 void register_node_types(sol::state &lua) {
+    // mv::Node
     lua.new_usertype<Node>("Node",
-    sol::constructors<Node(sol::this_state, const char*), Node(const char*)>(),
+    sol::constructors<Node(sol::this_state, const char*)>(),
     sol::meta_function::index, &Node::lua_dynamic_get,
     sol::meta_function::new_index, &Node::lua_dynamic_set,
     sol::meta_function::length, [](Node& n) { return n.entries.size(); },
     "init", &Node::lua_init,
-    "update", &Node::lua_update,
+    // "update", &Node::lua_update,
+    "update", sol::property(
+        [](Node &node) { return node.lua_update; },
+        [](Node &node, sol::function func) { node.lua_update = func; }
+    ),
     "draw", &Node::lua_draw,
     "input", &Node::lua_input,
+    
+    // NOTE: Likely need a better way to expose this
+    "children", &Node::children,
+    
+    // I probably don't actually need to do it like this, and just have 
+    // the Node template exposed.
+    "add_instanced_child", sol::overload(
+        &Node::add_instanced_child<Sprite>,
+        &Node::add_instanced_child<Node>
+    )
+    );
 
-    "add_instanced_child", [](Node& node, Node *child) {
-        return node.add_instanced_child<Node>(child);
-    });
-
+    // mv::Sprite
     lua.new_usertype<Sprite>("Sprite",
     sol::constructors<
-        Sprite(const char*), 
-        Sprite(const char*, std::shared_ptr<Texture>),
-        Sprite(sol::this_state, const char*),
-        Sprite(sol::this_state, const char*, std::shared_ptr<Texture>)
+        Sprite(sol::this_state, const char*, std::shared_ptr<Texture>),
+        Sprite(sol::this_state, const char*)
     >(),
     sol::base_classes, sol::bases<Node>(),
     sol::meta_function::index, &Sprite::lua_dynamic_get,
     sol::meta_function::new_index, &Sprite::lua_dynamic_set,
     sol::meta_function::length, [](Sprite& n) { return n.entries.size(); },
-    "init", &Sprite::lua_init,
-    "update", &Sprite::lua_update,
-    "draw", &Sprite::lua_draw,
-    "input", &Sprite::lua_input,
-
-
 
     "pos", sol::property(&Sprite::get_pos, &Sprite::set_pos),
     "offset", sol::property(&Sprite::get_offset, &Sprite::set_offset),
@@ -128,7 +143,8 @@ void register_node_types(sol::state &lua) {
     "set_color", &Sprite::set_color,
     "get_color", &Sprite::get_color,
     "is_centered", &Sprite::is_centered,
-    "set_centered", &Sprite::set_centered);
+    "set_centered", &Sprite::set_centered
+    );
 }
 
 }

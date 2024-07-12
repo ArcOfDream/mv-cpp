@@ -31,21 +31,23 @@ class Sprite : public Node {
 
   public:
     // ctor
-    using Node::Node;
+    Sprite(const char* n) : Node(n) {};
+    Sprite(sol::this_state lua, const char* n) : Node(lua, n) {};
+
     Sprite(const char*, std::shared_ptr<Texture>);
     Sprite(sol::this_state, const char*, std::shared_ptr<Texture>);
 
     void flag_dirty(bool = true);
 
-    void _init() {};
-    // void _update(double);
-    void _draw();
-    void _input(SDL_Event&){};
+    // virtual void _init() override {};
+    // virtual void _update(double) override;
+    // virtual void _input(SDL_Event&) override {};
+    void _draw() override;
 
-    virtual void init() {};
-    virtual void update(double) {};
-    virtual void draw() {};
-    virtual void input(SDL_Event&) {};
+    // virtual void init() override {};
+    // virtual void update(double) override {};
+    // virtual void draw() override {};
+    // virtual void input(SDL_Event&) override {};
 
     glm::vec2 get_pos() const;
     void set_pos(glm::vec2);
