@@ -112,7 +112,8 @@ void Context::engine_init() {
 
     // sol2 init
     lua.open_libraries(sol::lib::base, sol::lib::package, sol::lib::math,
-                       sol::lib::string, sol::lib::table, sol::lib::ffi);
+                       sol::lib::string, sol::lib::table, sol::lib::utf8,
+                       sol::lib::debug);
     register_glm_types(lua);
     register_resource_types(lua);
     register_node_types(lua);
