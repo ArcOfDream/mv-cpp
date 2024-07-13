@@ -12,19 +12,15 @@
 #include "resource/resource.h"
 #include "sol/sol.hpp"
 
-
-#define MAX_VERTEX_MEMORY 512 * 1024
-#define MAX_ELEMENT_MEMORY 128 * 1024
-
 #pragma once
 
 namespace mv {
 class Context : public std::enable_shared_from_this<Context> {
-    
+
     int window_height;
     int window_width;
     std::string window_title;
-    
+
     std::unordered_map<std::string, IResource> data;
     unsigned int fps;
     unsigned int target_fps = 60;
@@ -47,7 +43,7 @@ class Context : public std::enable_shared_from_this<Context> {
     SDL_GLContext gl_context;
     SDL_Window *window;
     sol::state lua;
-    
+
     std::mutex mutex;
     std::condition_variable cv;
     std::condition_variable cv_main;
