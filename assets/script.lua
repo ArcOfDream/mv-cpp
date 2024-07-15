@@ -12,7 +12,7 @@ an_update = function(self, dt)
     print(string.format("Vec2(%f, %f)\n", self.pos.x, self.pos.y))
 end
 
-my_node = mv.Sprite.new("my_node", kleines_tex)
+my_node = Sprite.new("my_node", kleines_tex)
 
 my_node.pos = Vec2(20, 20) -- applies this change
 my_node.update = an_update

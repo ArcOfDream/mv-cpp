@@ -2,3 +2,5 @@
 option('use_pure_gles2', type: 'boolean', value: false)
 option('use_freetype', type: 'boolean', value: false)
 option('single_thread', type: 'boolean', value: false)
+option('luajit', type: 'boolean', value: true)
+option('use_lua53', type: 'boolean', value: false)

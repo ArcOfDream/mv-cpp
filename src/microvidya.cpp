@@ -7,6 +7,7 @@
 // #include "fontstash.h"
 #include "mv/mv.h"
 #include "mv/graphics/fontrender.h"
+#include "mv/scripting/register_types.h"
 #include "imgui.h"
 #include "soloud.h"
 #include "soloud_error.h"
@@ -68,7 +69,7 @@ class MyGame : public Context {
         renderer.set_camera(&cam);
 
         soloud.init(SoLoud::Soloud::CLIP_ROUNDOFF |
-                        SoLoud::Soloud::ENABLE_VISUALIZATION,
+                    SoLoud::Soloud::ENABLE_VISUALIZATION,
                     SoLoud::Soloud::AUTO, 44100, 1024, 2);
 
         kleines_root =
@@ -93,7 +94,8 @@ class MyGame : public Context {
         kleines_child->set_pos({200, 0});
         kleines_child->set_scale({0.2f, 0.2f});
         kleines_child->set_color({1, 1, 1, 0.2});
-
+        
+        load_middleclass(lua);
         lua.set("kleines_root", kleines_root.get());
         lua.set("kleines_tex", kleines_ptr->getptr());
 
@@ -171,11 +173,11 @@ class MyGame : public Context {
 int main(int, char **) {
     printf("The project name is %s\n", PROJECT_NAME);
 
-    auto game = std::make_shared<MyGame>(320, 240, "microvidya");
+    auto game = MyGame(640, 480, "microvidya");
 
 
-    game->engine_init();
-    game->run();
+    game.engine_init();
+    game.run();
 
     return 0;
 }
