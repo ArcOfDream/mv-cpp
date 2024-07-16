@@ -27,17 +27,8 @@ deps = [
   pxtone_project.get_variable('lib_pxtone_dep'),
   dependency('glm'),
   dependency('threads'),
+  dependency('wren'),
 ]
-
-if get_option('luajit')
-  deps += dependency('luajit')
-else
-  if get_option('use_lua53')
-    deps += dependency('lua5.3')
-  else
-    deps += dependency('lua5.4')
-  endif
-endif
 
 if target_machine.system() not in ['emscripten']
   deps += dependency('SDL2_image')
