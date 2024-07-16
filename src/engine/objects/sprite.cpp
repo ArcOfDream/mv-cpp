@@ -1,4 +1,3 @@
-#include "sol/sol.hpp"
 #define GLM_ENABLE_EXPERIMENTAL
 #define _USE_MATH_DEFINES
 
@@ -13,12 +12,6 @@
 
 namespace mv {
 Sprite::Sprite(const char* _name, std::shared_ptr<Texture> _tex) : Node(_name) {
-    name = _name;
-    set_texture(_tex);
-    // set_color(color);
-}
-
-Sprite::Sprite(sol::this_state lua, const char* _name, std::shared_ptr<Texture> _tex) : Node(lua, _name) {
     name = _name;
     set_texture(_tex);
     // set_color(color);

@@ -1,7 +1,6 @@
 #include "mv/graphics/vertex.h"
 #include "mv/objects/node.h"
 #include "mv/resource/texture.h"
-#include "sol/sol.hpp"
 #include <glm/glm.hpp>
 #include <memory>
 // #include <string>
@@ -32,11 +31,8 @@ class Sprite : public Node {
   public:
     // ctor
     Sprite(const char* n) : Node(n) {};
-    Sprite(sol::this_state lua, const char* n) : Node(lua, n) {};
-
     Sprite(const char*, std::shared_ptr<Texture>);
-    Sprite(sol::this_state, const char*, std::shared_ptr<Texture>);
-
+    
     void flag_dirty(bool = true);
 
     // virtual void _init() override {};

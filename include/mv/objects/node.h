@@ -1,7 +1,5 @@
 #include "SDL_events.h"
-#include "sol/sol.hpp"
 #include <list>
-#include <lua.h>
 #include <memory>
 #include <string>
 
@@ -12,18 +10,11 @@ class Node {
   public:
     std::string name;
 
-    // Lua related stuff
-    lua_State *lua = nullptr;
-    std::unordered_map<std::string, sol::object> entries;
-    void lua_dynamic_set(std::string key, sol::stack_object value);
-    sol::object lua_dynamic_get(std::string key);
-
     // scene graph type of thing
     std::list<std::shared_ptr<Node>> children;
     Node *parent = nullptr;
 
     Node(const char*);
-    Node(sol::this_state, const char*);
 
   template <typename T, typename... Targs>
   T* add_child(const Targs &...args) {
@@ -54,10 +45,5 @@ class Node {
     virtual void update(double) {};
     virtual void draw() {};
     virtual void input(SDL_Event&) {};
-
-    sol::function lua_init;
-    sol::function lua_update;
-    sol::function lua_draw;
-    sol::function lua_input;
 };
 } // namespace mv

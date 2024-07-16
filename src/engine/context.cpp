@@ -110,13 +110,10 @@ void Context::engine_init() {
     ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
     ImGui_ImplOpenGL3_Init();
 
-    // sol2 init
-    lua.open_libraries(sol::lib::base, sol::lib::package, sol::lib::math,
-                       sol::lib::string, sol::lib::table, sol::lib::utf8,
-                       sol::lib::debug);
-    register_glm_types(lua);
-    register_resource_types(lua);
-    register_node_types(lua);
+    // wren init
+    register_glm_types();
+    register_resource_types();
+    register_node_types();
 
     // and the rest of init
     init();

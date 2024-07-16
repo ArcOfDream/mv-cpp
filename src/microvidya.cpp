@@ -1,7 +1,6 @@
 #define PROJECT_NAME "microvidya"
 #define GLM_ENABLE_EXPERIMENTAL
 #define _USE_MATH_DEFINES
-#define SOL_ALL_SAFETIES_ON 1
 
 // #include "imgui.h"
 // #include "fontstash.h"
@@ -94,16 +93,6 @@ class MyGame : public Context {
         kleines_child->set_pos({200, 0});
         kleines_child->set_scale({0.2f, 0.2f});
         kleines_child->set_color({1, 1, 1, 0.2});
-        
-        load_middleclass(lua);
-        lua.set("kleines_root", kleines_root.get());
-        lua.set("kleines_tex", kleines_ptr->getptr());
-
-        sol::optional<sol::error> err = lua.script_file("assets/script.lua");
-
-        if (err.has_value()) {
-          printf("Error during script compilation!");
-        }
         
         f = {256, 256};
         f.setup_context();
