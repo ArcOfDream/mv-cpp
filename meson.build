@@ -7,13 +7,11 @@ project(
 )
 
 cc = meson.get_compiler('c')
-# fs = import('fs')
 l_args = []
 
 imgui_project = subproject('imgui')
 soloud_project = subproject('soloud')
 pxtone_project = subproject('libpxtone')
-# sol_project = subproject('sol')
 
 include_dirs = include_directories('include')
 includes = [include_dirs]

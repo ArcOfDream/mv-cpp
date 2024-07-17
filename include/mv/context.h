@@ -10,8 +10,11 @@
 #include "soloud.h"
 #include "graphics/renderer.h"
 #include "resource/resource.h"
+#include "wrenbind17/wrenbind17.hpp"
 
 #pragma once
+
+namespace wren = wrenbind17;
 
 namespace mv {
 class Context : public std::enable_shared_from_this<Context> {
@@ -42,6 +45,8 @@ class Context : public std::enable_shared_from_this<Context> {
     SDL_GLContext gl_context;
     SDL_Window *window;
 
+    wren::VM wren_vm;
+
     std::mutex mutex;
     std::condition_variable cv;
     std::condition_variable cv_main;
@@ -63,11 +68,12 @@ class Context : public std::enable_shared_from_this<Context> {
     void draw_loop();
     void em_try_exit();
 
-    virtual void init() {};
-    virtual void input(SDL_Event&) {};
-    virtual void update(double) {};
-    virtual void draw() {};
-    virtual void exit() {};
+    virtual void register_wren_types(wren::VM&) {}
+    virtual void init() {}
+    virtual void input(SDL_Event&) {}
+    virtual void update(double) {}
+    virtual void draw() {}
+    virtual void exit() {}
 
     std::shared_ptr<Context> getptr() {
       return shared_from_this();

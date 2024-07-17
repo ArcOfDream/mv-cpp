@@ -5,11 +5,8 @@
 #include "mv/gl.h"
 #include "mv/graphics/renderer.h"
 #include "mv/scripting/register_types.h"
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_events.h>
 #include <SDL2/SDL_hints.h>
 #include <SDL2/SDL_timer.h>
-#include <SDL2/SDL_video.h>
 #include <assert.h>
 // #include <memory>
 #include <mutex>
@@ -111,9 +108,12 @@ void Context::engine_init() {
     ImGui_ImplOpenGL3_Init();
 
     // wren init
-    register_glm_types();
-    register_resource_types();
-    register_node_types();
+    register_math_types(wren_vm);
+    register_glm_types(wren_vm);
+    register_core_types(wren_vm);
+    register_resource_types(wren_vm);
+    register_node_types(wren_vm);
+    register_wren_types(wren_vm); // custom types will be registered here
 
     // and the rest of init
     init();

@@ -28,11 +28,11 @@ class Node {
   }
 
   template <typename T>
-  T* add_instanced_child(T *what) {
+  std::shared_ptr<T> add_instanced_child(std::shared_ptr<T> what) {
     static_assert(std::is_base_of<Node, T>::value, "T must derive from Node");
 
     what->parent = this;
-    children.emplace_back(std::shared_ptr<T>(what));
+    children.emplace_back(what);
     return what;
   }
 
