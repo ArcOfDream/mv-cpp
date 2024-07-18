@@ -28,6 +28,7 @@ void MyGame::register_wren_types(wren::VM &vm) {
 
     auto &mygame = module.klass<MyGame>("MyGame");
     mygame.func<&MyGame::add_node>("addNode");
+    mygame.func<&MyGame::add_sprite>("addSprite");
     mygame.func<&MyGame::get_root_node>("getRootNode");
     mygame.func<&MyGame::get_kleines_texture>("getKleinesTexture");
 }

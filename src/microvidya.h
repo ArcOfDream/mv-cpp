@@ -50,6 +50,7 @@ class MyGame : public Context {
     std::shared_ptr<Sprite> get_root_node() { return kleines_root; }
     std::shared_ptr<Texture> get_kleines_texture() { return kleines_ptr->getptr(); }
     void add_node(std::shared_ptr<Node> node) { kleines_root->add_instanced_child(node); }
+    void add_sprite(std::shared_ptr<Sprite> node) { kleines_root->add_instanced_child(node); }
 
     void on_talk_press();
 
