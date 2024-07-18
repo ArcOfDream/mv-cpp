@@ -17,6 +17,10 @@ Sprite::Sprite(std::string _name, std::shared_ptr<Texture> _tex) : Node(_name) {
     // set_color(color);
 }
 
+Sprite::Sprite(wren::Variable derived, std::string _name) : Node(derived, _name) {
+    wren_draw = derived.func("draw(_)");
+};
+
 void Sprite::update_vertex_pos(glm::vec2 pos, glm::vec2 size) {
     verts[0].pos = {pos.x, pos.y};
     verts[1].pos = {pos.x + size.x, pos.y};
@@ -149,8 +153,12 @@ void Sprite::_draw() {
         Renderer::get().push_quad(verts[0], verts[1], verts[2], verts[3], tex->get_id());
 
     for (auto &child : children) {
-        child->_draw();
+        if (Sprite *spr = dynamic_cast<Sprite *>(child.get())) {
+            spr->_draw();
+        }
     }
-    draw();
+
+    if (wren_constructed) wren_draw(this);
+    else draw();
 }
 } // namespace mv

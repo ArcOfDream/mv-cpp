@@ -72,6 +72,9 @@ void MyGame::init() {
     f.add_font_mem("silkscreen", slkscr_ttf, slkscr_ttf_size);
 
     wren_vm.runFromFile("main", "assets/script.wren");
+
+    wren::Method entry = wren_vm.find("main", "Instance").func("entryPoint(_)");
+    entry(this);
 }
 
 void MyGame::update(double dt) {

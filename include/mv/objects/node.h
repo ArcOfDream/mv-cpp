@@ -1,20 +1,32 @@
 #include "SDL_events.h"
+#include "wrenbind17/method.hpp"
+#include "wrenbind17/variable.hpp"
+#include "wrenbind17/wrenbind17.hpp"
 #include <list>
 #include <memory>
 #include <string>
+
+namespace wren = wrenbind17;
 
 #pragma once
 
 namespace mv {
 class Node {
   public:
+    Node(std::string);
+    Node(wren::Variable, std::string); 
+
     std::string name;
 
-    // scene graph type of thing
+    // wren specific fields
+    bool wren_constructed = false;
+    wren::Method wren_init;
+    wren::Method wren_update;
+    wren::Method wren_input;
+
+    // scene graph fields
     std::list<std::shared_ptr<Node>> children;
     Node *parent = nullptr;
-
-    Node(std::string);
 
   template <typename T, typename... Targs>
   T* add_child(const Targs &...args) {
@@ -38,12 +50,10 @@ class Node {
 
     virtual void _init() {};
     virtual void _update(double);
-    virtual void _draw() {};
     virtual void _input(SDL_Event&) {};
 
     virtual void init() {};
     virtual void update(double) {};
-    virtual void draw() {};
     virtual void input(SDL_Event&) {};
 };
 } // namespace mv

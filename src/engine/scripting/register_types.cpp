@@ -3,8 +3,8 @@
 #include "mv/objects/node.h"
 #include "mv/objects/sprite.h"
 #include "mv/resource/texture.h"
+#include "wrenbind17/variable.hpp"
 #include "wrenbind17/wrenbind17.hpp"
-#include "wrenbind17/stdmap.hpp"
 
 #include <glm/detail/qualifier.hpp>
 #include <glm/ext/matrix_float3x3.hpp>
@@ -122,29 +122,27 @@ void register_node_types(wren::VM &vm) {
     wren::ForeignModule &module = vm.module("mv");
 
     auto &node = module.klass<Node>("Node");
-    node.ctor<std::string>();
+    node.ctor<wren::Variable, std::string>();
     node.var<&Node::children>("children");
     node.varReadonly<&Node::name>("name");
     node.func<&Node::add_instanced_child<Node>>("addChild");
 
     auto &sprite = module.klass<Sprite, Node>("Sprite");
-    sprite.ctor<std::string>();
+    sprite.ctor<wren::Variable, std::string>();
     // Node related stuff here
     sprite.var<&Sprite::children>("children");
     sprite.varReadonly<&Sprite::name>("name");
     sprite.func<&Sprite::add_instanced_child<Node>>("addChild");
+    sprite.func<&Sprite::add_instanced_child<Sprite>>("addChildSprite");
     // Sprite props
     sprite.prop<&Sprite::get_pos, &Sprite::set_pos>("pos");
     sprite.prop<&Sprite::get_offset, &Sprite::set_offset>("offset");
     sprite.prop<&Sprite::get_scale, &Sprite::set_scale>("scale");
     sprite.prop<&Sprite::get_angle, &Sprite::set_angle>("angle");
-    sprite.prop<&Sprite::get_angle_degrees, &Sprite::set_angle_degrees>("angle_degrees");
+    sprite.prop<&Sprite::get_angle_degrees, &Sprite::set_angle_degrees>("angleDegrees");
     sprite.prop<&Sprite::get_color, &Sprite::set_color>("color");
     sprite.prop<&Sprite::get_texture, &Sprite::set_texture>("texture");
     sprite.prop<&Sprite::is_centered, &Sprite::set_centered>("centered");
-    // Node related stuff here
-
-
 }
 
 }

@@ -1,6 +1,7 @@
 #include "mv/graphics/vertex.h"
 #include "mv/objects/node.h"
 #include "mv/resource/texture.h"
+#include "wrenbind17/wrenbind17.hpp"
 #include <glm/glm.hpp>
 #include <memory>
 // #include <string>
@@ -27,10 +28,12 @@ class Sprite : public Node {
 
     inline void update_vertex_pos(glm::vec2, glm::vec2);
 
+    wren::Method wren_draw;
 
   public:
     // ctor
     Sprite(std::string n) : Node(n) {};
+    Sprite(wren::Variable v, std::string s);
     Sprite(std::string, std::shared_ptr<Texture>);
 
     void flag_dirty(bool = true);
@@ -38,11 +41,11 @@ class Sprite : public Node {
     // virtual void _init() override {};
     // virtual void _update(double) override;
     // virtual void _input(SDL_Event&) override {};
-    void _draw() override;
+    void _draw();
 
     // virtual void init() override {};
     // virtual void update(double) override {};
-    // virtual void draw() override {};
+    virtual void draw() {};
     // virtual void input(SDL_Event&) override {};
 
     glm::vec2 get_pos() const;

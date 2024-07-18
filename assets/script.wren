@@ -1,7 +1,41 @@
-import "mv" for Math, Node, Sprite, MyGame
+import "mv" for Math, Sprite, MyGame, Vec2
 
-var lerped_value = Math.lerp(0, 1, 0.5)
+class MySprite {
+    construct new() {
+        _timer = 0
+    }
 
-var a_node = Node.new("wren_node")
+    init(self) {}
 
-System.print("Hello, %(lerped_value)!")
+    update(self, dt) {
+        _timer = _timer + dt
+
+        self.pos.x = 100 * sin(_timer)
+        self.pos.y = 100 * cos(_timer)
+    }
+
+    // unused atm
+    draw(self) {
+        System.print("drawcall invoked!")
+    }
+
+    input(self) {}
+}
+
+
+class Game {
+    construct new() {
+        _a_sprite = Sprite.new(MySprite.new(), "my_sprite")
+    }
+
+    entryPoint(context) {
+        var node = context.getRootNode()
+        var sprite = context.getKleinesTexture()
+
+        _a_sprite.texture = sprite
+
+        context.addNode(_a_sprite)
+    }
+}
+
+var Instance = Game.new()
