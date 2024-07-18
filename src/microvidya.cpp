@@ -4,6 +4,7 @@
 #include "imgui.h"
 #include "soloud.h"
 #include "soloud_error.h"
+#include "wrenbind17/variable.hpp"
 #include "wrenbind17/wrenbind17.hpp"
 #include <memory>
 #include <stdio.h>
@@ -12,7 +13,7 @@ float time_elapsed;
 
 using namespace mv;
 
-namespace wren = wrenbind17; 
+namespace wren = wrenbind17;
 
 void MyGame::on_talk_press() {
     soloud.stop(pxt_handle);
@@ -22,7 +23,7 @@ void MyGame::on_talk_press() {
         pxt_handle = soloud.play(pxt, 0.9f, 0.0f);
 }
 
-void MyGame::register_wren_types(wren::VM &vm) { 
+void MyGame::register_wren_types(wren::VM &vm) {
     wren::ForeignModule &module = vm.module("mv");
 
     auto &mygame = module.klass<MyGame>("MyGame");

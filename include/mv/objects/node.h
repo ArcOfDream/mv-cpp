@@ -14,7 +14,7 @@ class Node {
     std::list<std::shared_ptr<Node>> children;
     Node *parent = nullptr;
 
-    Node(const char*);
+    Node(std::string);
 
   template <typename T, typename... Targs>
   T* add_child(const Targs &...args) {

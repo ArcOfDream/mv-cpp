@@ -5,7 +5,7 @@
 
 namespace mv {
 
-Node::Node(const char* _name) { name = _name; }
+Node::Node(std::string _name) { name = _name; }
 
 void Node::_update(double dt) {
     for (auto &child : children) {

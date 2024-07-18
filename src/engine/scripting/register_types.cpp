@@ -10,6 +10,7 @@
 #include <glm/ext/matrix_float3x3.hpp>
 #include <glm/ext/vector_float2.hpp>
 #include <glm/ext/vector_float4.hpp>
+#include <glm/geometric.hpp>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
@@ -25,9 +26,9 @@ namespace mv {
 
 void register_math_types(wren::VM &vm) {
     wren::ForeignModule &module = vm.module("mv");
-    
+
     auto &math = module.klass<WrenMath>("Math");
-    
+
     math.funcStaticExt<static_cast<float (*)(float)>(&log10f)>("log10");
     math.funcStaticExt<&glm::modf<float>>("mod");
     math.funcStaticExt<static_cast<float (*)(float, float)>(&fmodf)>("fmod");
@@ -39,7 +40,7 @@ void register_math_types(wren::VM &vm) {
 
 void register_glm_types(wren::VM &vm) {
    wren::ForeignModule &module = vm.module("mv");
-   
+
    auto &vec2 = module.klass<glm::vec2>("Vec2");
    vec2.ctor<float, float>();
    vec2.var<&glm::vec2::x>("x");
@@ -57,8 +58,10 @@ void register_glm_types(wren::VM &vm) {
    vec2.funcStaticExt<&glm::tanh<2, float, glm::packed_highp>>("tanh");
    vec2.funcStaticExt<&glm::abs<2, float, glm::packed_highp>>("abs");
    vec2.funcStaticExt<&glm::ceil<2, float, glm::packed_highp>>("ceil");
+   vec2.funcStaticExt<&glm::length<2, float, glm::packed_highp>>("length");
+   vec2.funcStaticExt<&glm::normalize<2, float, glm::packed_highp>>("normalize");
    vec2.funcStaticExt<&vec_mix<glm::vec2>>("mix");
-   
+
    auto &vec3 = module.klass<glm::vec3>("Vec3");
    vec3.ctor<float, float, float>();
    vec3.var<&glm::vec3::x>("x");
@@ -76,7 +79,7 @@ void register_glm_types(wren::VM &vm) {
    vec3.funcStaticExt<&glm::tan<3, float, glm::packed_highp>>("tan");
    vec3.funcStaticExt<&glm::tanh<3, float, glm::packed_highp>>("tanh");
    vec3.funcStaticExt<&vec_mix<glm::vec3>>("mix");
-   
+
    auto &vec4 = module.klass<glm::vec4>("Vec4");
    vec4.ctor<float, float, float, float>();
    vec4.var<&glm::vec4::x>("x");
@@ -95,10 +98,10 @@ void register_glm_types(wren::VM &vm) {
    vec4.funcStaticExt<&glm::tan<4, float, glm::packed_highp>>("tan");
    vec4.funcStaticExt<&glm::tanh<4, float, glm::packed_highp>>("tanh");
    vec4.funcStaticExt<&vec_mix<glm::vec4>>("mix");
-   
+
    auto &mat3 = module.klass<glm::mat3>("Mat3");
    mat3.ctor<float>();
-   
+
    // TODO: extend as needed
 }
 
@@ -110,22 +113,22 @@ void register_core_types(wren::VM &vm) {
 
 void register_resource_types(wren::VM &vm) {
     wren::ForeignModule &module = vm.module("mv");
-    
+
     auto &texture = module.klass<Texture>("Texture");
-    
+
 }
 
 void register_node_types(wren::VM &vm) {
     wren::ForeignModule &module = vm.module("mv");
-    
+
     auto &node = module.klass<Node>("Node");
-    node.ctor<const char*>();
+    node.ctor<std::string>();
     node.var<&Node::children>("children");
     node.varReadonly<&Node::name>("name");
     node.func<&Node::add_instanced_child<Node>>("addChild");
 
     auto &sprite = module.klass<Sprite, Node>("Sprite");
-    sprite.ctor<const char*, std::shared_ptr<Texture>>();
+    sprite.ctor<std::string>();
     // Node related stuff here
     sprite.var<&Sprite::children>("children");
     sprite.varReadonly<&Sprite::name>("name");
@@ -141,7 +144,7 @@ void register_node_types(wren::VM &vm) {
     sprite.prop<&Sprite::is_centered, &Sprite::set_centered>("centered");
     // Node related stuff here
 
-    
+
 }
 
 }

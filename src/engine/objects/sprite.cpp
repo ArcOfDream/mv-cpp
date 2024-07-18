@@ -11,7 +11,7 @@
 #include <math.h>
 
 namespace mv {
-Sprite::Sprite(const char* _name, std::shared_ptr<Texture> _tex) : Node(_name) {
+Sprite::Sprite(std::string _name, std::shared_ptr<Texture> _tex) : Node(_name) {
     name = _name;
     set_texture(_tex);
     // set_color(color);

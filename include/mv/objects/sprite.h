@@ -30,9 +30,9 @@ class Sprite : public Node {
 
   public:
     // ctor
-    Sprite(const char* n) : Node(n) {};
-    Sprite(const char*, std::shared_ptr<Texture>);
-    
+    Sprite(std::string n) : Node(n) {};
+    Sprite(std::string, std::shared_ptr<Texture>);
+
     void flag_dirty(bool = true);
 
     // virtual void _init() override {};
