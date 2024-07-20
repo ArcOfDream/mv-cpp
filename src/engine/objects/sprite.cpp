@@ -2,8 +2,8 @@
 #define _USE_MATH_DEFINES
 
 #include "mv/objects/sprite.h"
-#include "mv/graphics/graphics.h"
 #include "mv/util.h"
+#include "mv/graphics/renderer.h"
 #include <glm/glm.hpp>
 #include <glm/gtx/matrix_transform_2d.hpp>
 #include <memory>
@@ -20,6 +20,28 @@ Sprite::Sprite(std::string _name, std::shared_ptr<Texture> _tex) : Node(_name) {
 Sprite::Sprite(wren::Variable derived, std::string _name) : Node(derived, _name) {
     wren_draw = derived.func("draw(_)");
 };
+
+DEFAULT_UPDATE(Sprite);
+
+void Sprite::_draw() {
+    if (dirty) {
+        rebuild_transform();
+        // apply_transform();
+        dirty = false;
+    }
+
+    if (tex)
+        Renderer::get().push_quad(verts[0], verts[1], verts[2], verts[3], tex->get_id());
+
+    for (auto &child : children) {
+        if (Sprite *spr = dynamic_cast<Sprite *>(child.get())) {
+            spr->_draw();
+        }
+    }
+
+    if (wren_constructed) wren_draw(this);
+    else draw();
+}
 
 void Sprite::update_vertex_pos(glm::vec2 pos, glm::vec2 size) {
     verts[0].pos = {pos.x, pos.y};
@@ -142,23 +164,4 @@ void Sprite::apply_transform() {
     }
 }
 
-void Sprite::_draw() {
-    if (dirty) {
-        rebuild_transform();
-        // apply_transform();
-        dirty = false;
-    }
-
-    if (tex)
-        Renderer::get().push_quad(verts[0], verts[1], verts[2], verts[3], tex->get_id());
-
-    for (auto &child : children) {
-        if (Sprite *spr = dynamic_cast<Sprite *>(child.get())) {
-            spr->_draw();
-        }
-    }
-
-    if (wren_constructed) wren_draw(this);
-    else draw();
-}
 } // namespace mv

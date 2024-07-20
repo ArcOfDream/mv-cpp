@@ -39,14 +39,11 @@ class Sprite : public Node {
     void flag_dirty(bool = true);
 
     // virtual void _init() override {};
-    // virtual void _update(double) override;
+    virtual void _update(double dt);
     // virtual void _input(SDL_Event&) override {};
-    void _draw();
+    virtual void _draw();
 
-    // virtual void init() override {};
-    // virtual void update(double) override {};
     virtual void draw() {};
-    // virtual void input(SDL_Event&) override {};
 
     glm::vec2 get_pos() const;
     void set_pos(glm::vec2);

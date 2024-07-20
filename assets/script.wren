@@ -8,16 +8,11 @@ class MySprite {
     init(self) {}
 
     update(self, dt) {
-        _timer = _timer + dt * 10
-        // Sees self as Node here
-        // self.pos = Vec2.new(100 * _timer.sin, 100 * _timer.cos)
-    }
-
-    draw(self) {
-        // Sees self as Sprite here????
+        _timer = _timer + dt * 4
         self.pos = Vec2.new(100 * _timer.sin, 100 * _timer.cos)
     }
 
+    draw(self) {}
     input(self) {}
 }
 

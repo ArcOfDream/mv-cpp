@@ -14,7 +14,7 @@ namespace mv {
 class Node {
   public:
     Node(std::string);
-    Node(wren::Variable, std::string); 
+    Node(wren::Variable, std::string);
 
     std::string name;
 
