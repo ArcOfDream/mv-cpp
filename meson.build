@@ -78,6 +78,7 @@ sources = [
   'src/engine/objects/sprite.cpp',
 
   'src/engine/resource/texture.cpp',
+  'src/engine/resource/material.cpp',
 
   'src/engine/scripting/register_types.cpp',
 
