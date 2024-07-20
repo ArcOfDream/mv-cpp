@@ -42,29 +42,7 @@ const char *default_frag =
     // vertexColor;\n" "	gl_FragColor = vertexColor;\n"
     "}\n";
 
-Shader::Shader(const char *vs_path, const char *fs_path) {
-    std::string vs_code, fs_code, line;
-    std::ifstream vs_file, fs_file;
-
-    vs_file.open(vs_path);
-    assert(vs_file.is_open());
-    fs_file.open(fs_path);
-    assert(fs_file.is_open());
-
-    while (!vs_file.eof()) {
-        std::getline(vs_file, line);
-        vs_code += line;
-    }
-
-    line = "";
-    while (!fs_file.eof()) {
-        std::getline(fs_file, line);
-        fs_code += line;
-    }
-
-    vs_file.close();
-    fs_file.close();
-
+Shader::Shader(std::string &vs_code, std::string &fs_code) {
     GLuint vs, fs;
     vs = load_shader(vs_code.c_str(), GL_VERTEX_SHADER);
     fs = load_shader(fs_code.c_str(), GL_FRAGMENT_SHADER);
@@ -223,9 +201,31 @@ GLuint link_shader_program(GLuint vertex, GLuint fragment) {
     return program;
 }
 
-Shader load_default_shader() {
-    Shader shd{};
+Shader load_default_shader() { return {}; }
 
-    return shd;
+Shader load_shader_file(std::string &vs_path, std::string &fs_path) {
+    std::string vs_code, fs_code, line;
+    std::ifstream vs_file, fs_file;
+
+    vs_file.open(vs_path);
+    assert(vs_file.is_open());
+    fs_file.open(fs_path);
+    assert(fs_file.is_open());
+
+    while (!vs_file.eof()) {
+        std::getline(vs_file, line);
+        vs_code += line;
+    }
+
+    line = "";
+    while (!fs_file.eof()) {
+        std::getline(fs_file, line);
+        fs_code += line;
+    }
+
+    vs_file.close();
+    fs_file.close();
+    
+    return Shader(vs_code, fs_code);
 }
 } // namespace mv

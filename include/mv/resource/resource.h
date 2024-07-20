@@ -11,6 +11,7 @@ enum ResourceType {
     AUDIO,
     PXTONE,
     SHADER,
+    MATERIAL,
     TEXT,
     JSON,
     SCENE,
