@@ -1,6 +1,4 @@
 #include "SDL_events.h"
-#include "wrenbind17/method.hpp"
-#include "wrenbind17/variable.hpp"
 #include "wrenbind17/wrenbind17.hpp"
 #include <list>
 #include <memory>

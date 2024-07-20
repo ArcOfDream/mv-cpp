@@ -1,12 +1,17 @@
+#define GLM_ENABLE_EXPERIMENTAL
+
 #include "mv/scripting/register_types.h"
 
+#include "mv/graphics/renderer.h"
 #include "mv/objects/node.h"
 #include "mv/objects/sprite.h"
 #include "mv/resource/texture.h"
-#include "wrenbind17/variable.hpp"
 #include "wrenbind17/wrenbind17.hpp"
 
 #include <glm/detail/qualifier.hpp>
+#include <glm/gtx/easing.hpp>
+#include <glm/gtx/vector_angle.hpp>
+#include <glm/gtx/exterior_product.hpp>
 #include <glm/ext/matrix_float3x3.hpp>
 #include <glm/ext/vector_float2.hpp>
 #include <glm/ext/vector_float4.hpp>
@@ -24,6 +29,18 @@ namespace wren = wrenbind17;
 
 namespace mv {
 
+// These are functions that are declared to make binding them easier,
+// mostly GLM functions that aren't really able to be statically cast.
+// TODO: move into util.h
+float vec2_cross(glm::vec2 &x, glm::vec2 &y) { return glm::cross(x, y); }
+float back_ease_in(float v) { return glm::backEaseIn(v); }
+float back_ease_out(float v) { return glm::backEaseOut(v); }
+float back_ease_inout(float v) { return glm::backEaseInOut(v); }
+// back with overshoot param
+float ex_back_ease_in(float v, float o) { return glm::backEaseIn(v, o); }
+float ex_back_ease_out(float v, float o) { return glm::backEaseOut(v, o); }
+float ex_back_ease_inout(float v, float o) { return glm::backEaseInOut(v, o); }
+
 void register_math_types(wren::VM &vm) {
     wren::ForeignModule &module = vm.module("mv");
 
@@ -36,9 +53,44 @@ void register_math_types(wren::VM &vm) {
     math.funcStaticExt<&glm::step<float>>("step");
     math.funcStaticExt<&glm::fract<float>>("fract");
     math.funcStaticExt<&vec_mix<float>>("lerp"); // for the generic math function we can use lerp instead
+    // Easings
+    math.funcStaticExt<&glm::sineEaseIn<float>>("sineEaseIn");
+    math.funcStaticExt<&glm::sineEaseOut<float>>("sineEaseOut");
+    math.funcStaticExt<&glm::sineEaseInOut<float>>("sineEaseInOut");
+    math.funcStaticExt<&glm::quinticEaseIn<float>>("quinticEaseIn");
+    math.funcStaticExt<&glm::quinticEaseOut<float>>("quinticEaseOut");
+    math.funcStaticExt<&glm::quinticEaseInOut<float>>("quinticEaseInOut");
+    math.funcStaticExt<&glm::quarticEaseIn<float>>("quarticEaseIn");
+    math.funcStaticExt<&glm::quarticEaseOut<float>>("quarticEaseOut");
+    math.funcStaticExt<&glm::quarticEaseInOut<float>>("quarticEaseInOut");
+    math.funcStaticExt<&glm::quadraticEaseIn<float>>("quadraticEaseIn");
+    math.funcStaticExt<&glm::quadraticEaseOut<float>>("quadraticEaseOut");
+    math.funcStaticExt<&glm::quadraticEaseInOut<float>>("quadraticEaseInOut");
+    math.funcStaticExt<&glm::exponentialEaseIn<float>>("exponentialEaseIn");
+    math.funcStaticExt<&glm::exponentialEaseOut<float>>("exponentialEaseOut");
+    math.funcStaticExt<&glm::exponentialEaseInOut<float>>("exponentialEaseInOut");
+    math.funcStaticExt<&glm::elasticEaseIn<float>>("elasticEaseIn");
+    math.funcStaticExt<&glm::elasticEaseOut<float>>("elasticEaseOut");
+    math.funcStaticExt<&glm::elasticEaseInOut<float>>("elasticEaseInOut");
+    math.funcStaticExt<&glm::cubicEaseIn<float>>("cubicEaseIn");
+    math.funcStaticExt<&glm::cubicEaseOut<float>>("cubicEaseOut");
+    math.funcStaticExt<&glm::cubicEaseInOut<float>>("cubicEaseInOut");
+    math.funcStaticExt<&glm::circularEaseIn<float>>("circularEaseIn");
+    math.funcStaticExt<&glm::circularEaseOut<float>>("circularEaseOut");
+    math.funcStaticExt<&glm::circularEaseInOut<float>>("circularEaseInOut");
+    math.funcStaticExt<&glm::bounceEaseIn<float>>("bounceEaseIn");
+    math.funcStaticExt<&glm::bounceEaseOut<float>>("bounceEaseOut");
+    math.funcStaticExt<&glm::bounceEaseInOut<float>>("bounceEaseInOut");
+    math.funcStaticExt<&back_ease_in>("backEaseIn");
+    math.funcStaticExt<&back_ease_out>("backEaseOut");
+    math.funcStaticExt<&back_ease_inout>("backEaseInOut");
+    math.funcStaticExt<&ex_back_ease_in>("exBackEaseIn");
+    math.funcStaticExt<&ex_back_ease_out>("exBackEaseOut");
+    math.funcStaticExt<&ex_back_ease_inout>("exBackEaseInOut");
 }
 
 void register_glm_types(wren::VM &vm) {
+   // TODO: extend as needed
    wren::ForeignModule &module = vm.module("mv");
 
    auto &vec2 = module.klass<glm::vec2>("Vec2");
@@ -59,7 +111,13 @@ void register_glm_types(wren::VM &vm) {
    vec2.funcStaticExt<&glm::abs<2, float, glm::packed_highp>>("abs");
    vec2.funcStaticExt<&glm::ceil<2, float, glm::packed_highp>>("ceil");
    vec2.funcStaticExt<&glm::length<2, float, glm::packed_highp>>("length");
+   vec2.funcStaticExt<&glm::length2<2, float, glm::packed_highp>>("lengthSquared");
    vec2.funcStaticExt<&glm::normalize<2, float, glm::packed_highp>>("normalize");
+   vec2.funcStaticExt<&glm::angle<2, float, glm::packed_highp>>("angle");
+   vec2.funcStaticExt<&glm::distance<2, float, glm::packed_highp>>("distanceTo");
+   vec2.funcStaticExt<&glm::distance2<2, float, glm::packed_highp>>("distanceSquaredTo");
+   vec2.funcStaticExt<&glm::dot<2, float, glm::packed_highp>>("dot");
+   vec2.funcStaticExt<&vec2_cross>("cross");
    vec2.funcStaticExt<&vec_mix<glm::vec2>>("mix");
 
    auto &vec3 = module.klass<glm::vec3>("Vec3");
@@ -101,14 +159,12 @@ void register_glm_types(wren::VM &vm) {
 
    auto &mat3 = module.klass<glm::mat3>("Mat3");
    mat3.ctor<float>();
-
-   // TODO: extend as needed
 }
 
 void register_core_types(wren::VM &vm) {
     wren::ForeignModule &module = vm.module("mv");
 
-
+    auto &renderer = module.klass<Renderer>("Renderer");
 }
 
 void register_resource_types(wren::VM &vm) {

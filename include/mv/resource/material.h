@@ -1,6 +1,6 @@
 #include "resource.h"
 #include "mv/graphics/shader.h"
-#include <GLES2/gl2.h>
+#include "mv/gl.h"
 #include <memory>
 #include <vector>
 #include <unordered_map>
