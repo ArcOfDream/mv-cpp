@@ -26,7 +26,6 @@ DEFAULT_UPDATE(Sprite);
 void Sprite::_draw() {
     if (dirty) {
         rebuild_transform();
-        // apply_transform();
         dirty = false;
     }
 
