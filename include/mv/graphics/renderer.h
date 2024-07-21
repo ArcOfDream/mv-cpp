@@ -2,8 +2,8 @@
 #include "camera2d.h"
 #include "drawcall.h"
 #include "mv/config.h"
+#include "mv/resource/material.h"
 #include "quad.h"
-#include "shader.h"
 #include "vertex.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_video.h>
@@ -28,6 +28,7 @@ class Renderer : public std::enable_shared_from_this<Renderer> {
     glm::vec4 clear_color = {0.1f, 0.2f, 0.5f, 1.0f};
     SDL_GLContext gl_context = 0;
     std::shared_ptr<Shader> default_shader = nullptr;
+    std::shared_ptr<Material> default_material = nullptr;
 
     Renderer(){};
 

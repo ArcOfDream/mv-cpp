@@ -1,9 +1,5 @@
-#include "mv/graphics/vertex.h"
-#include <GLES2/gl2.h>
-#include <cstddef>
 #define GLM_ENABLE_EXPERIMENTAL
 
-#include "mv/components/graphics.h"
 #include "mv/config.h"
 #include "mv/gl.h"
 #include "mv/graphics/graphics.h"
@@ -17,6 +13,35 @@
 
 namespace mv {
 
+std::string default_vert = R"glsl(#version 100
+attribute vec2 attribPos;
+attribute vec2 attribUV;
+attribute vec4 attribColor;
+
+varying mediump vec4 vertexColor;
+varying mediump vec2 texUV;
+
+uniform mat3 view;
+uniform mat3 projection;
+
+void main() {
+	vertexColor = attribColor;
+	texUV = attribUV;
+   gl_Position = vec4(projection * vec3(attribPos, 1.0), 1.0);
+}
+)glsl";
+
+std::string default_frag = R"glsl(#version 100
+varying mediump vec4 vertexColor;
+varying mediump vec2 texUV;
+
+uniform sampler2D texID;
+
+void main() {
+	gl_FragColor = texture2D(texID, texUV) * vertexColor;
+}
+)glsl";
+
 Renderer::~Renderer() {
     for (DrawCall &dc : drawcalls) {
         dc.~DrawCall();
@@ -25,13 +50,18 @@ Renderer::~Renderer() {
 
 void Renderer::init() {
     default_shader = std::shared_ptr<Shader>(new Shader());
-
+    
     for (unsigned long i = 0; i < MAX_DRAWCALLS; i++) {
         drawcalls[i].vbo.buffer_data(0, MAX_VERTICES * sizeof(Vertex));
     }
 
-    // drawcall_amount = drawcalls.size();
     projection = glm::mat3(glm::ortho(0.0f, width, height, 0.0f));
+
+    default_material = MaterialBuilder("default_material")
+        .begin(default_vert, default_frag)
+        .uniform_mat3("projection", projection)
+        .uniform_int("texID", 0)
+        .end();
 
     glEnable(GL_BLEND);
     glDepthFunc(GL_NEVER);
