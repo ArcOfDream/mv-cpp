@@ -23,24 +23,7 @@ Sprite::Sprite(wren::Variable derived, std::string _name) : Node(derived, _name)
 
 DEFAULT_UPDATE(Sprite);
 
-void Sprite::_draw() {
-    if (dirty) {
-        rebuild_transform();
-        dirty = false;
-    }
-
-    if (tex)
-        Renderer::get().push_quad(verts[0], verts[1], verts[2], verts[3], tex->get_id());
-
-    for (auto &child : children) {
-        if (Sprite *spr = dynamic_cast<Sprite *>(child.get())) {
-            spr->_draw();
-        }
-    }
-
-    if (wren_constructed) wren_draw(this);
-    else draw();
-}
+DEFAULT_DRAW(Sprite);
 
 void Sprite::update_vertex_pos(glm::vec2 pos, glm::vec2 size) {
     verts[0].pos = {pos.x, pos.y};

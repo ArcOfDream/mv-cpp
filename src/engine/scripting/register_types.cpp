@@ -31,7 +31,7 @@ namespace mv {
 
 // These are functions that are declared to make binding them easier,
 // mostly GLM functions that aren't really able to be statically cast.
-// TODO: move into util.h
+// TODO: move into util.h or make a new header file
 float vec2_cross(glm::vec2 &x, glm::vec2 &y) { return glm::cross(x, y); }
 float back_ease_in(float v) { return glm::backEaseIn(v); }
 float back_ease_out(float v) { return glm::backEaseOut(v); }
@@ -53,31 +53,31 @@ void register_math_types(wren::VM &vm) {
     math.funcStaticExt<&glm::step<float>>("step");
     math.funcStaticExt<&glm::fract<float>>("fract");
     math.funcStaticExt<&vec_mix<float>>("lerp"); // for the generic math function we can use lerp instead
-    // Easings
+    // Easings, used with lerp/mix
     math.funcStaticExt<&glm::sineEaseIn<float>>("sineEaseIn");
     math.funcStaticExt<&glm::sineEaseOut<float>>("sineEaseOut");
     math.funcStaticExt<&glm::sineEaseInOut<float>>("sineEaseInOut");
-    math.funcStaticExt<&glm::quinticEaseIn<float>>("quinticEaseIn");
-    math.funcStaticExt<&glm::quinticEaseOut<float>>("quinticEaseOut");
-    math.funcStaticExt<&glm::quinticEaseInOut<float>>("quinticEaseInOut");
-    math.funcStaticExt<&glm::quarticEaseIn<float>>("quarticEaseIn");
-    math.funcStaticExt<&glm::quarticEaseOut<float>>("quarticEaseOut");
-    math.funcStaticExt<&glm::quarticEaseInOut<float>>("quarticEaseInOut");
-    math.funcStaticExt<&glm::quadraticEaseIn<float>>("quadraticEaseIn");
-    math.funcStaticExt<&glm::quadraticEaseOut<float>>("quadraticEaseOut");
-    math.funcStaticExt<&glm::quadraticEaseInOut<float>>("quadraticEaseInOut");
-    math.funcStaticExt<&glm::exponentialEaseIn<float>>("exponentialEaseIn");
-    math.funcStaticExt<&glm::exponentialEaseOut<float>>("exponentialEaseOut");
-    math.funcStaticExt<&glm::exponentialEaseInOut<float>>("exponentialEaseInOut");
+    math.funcStaticExt<&glm::quinticEaseIn<float>>("quintEaseIn");
+    math.funcStaticExt<&glm::quinticEaseOut<float>>("quintEaseOut");
+    math.funcStaticExt<&glm::quinticEaseInOut<float>>("quintEaseInOut");
+    math.funcStaticExt<&glm::quarticEaseIn<float>>("quartEaseIn");
+    math.funcStaticExt<&glm::quarticEaseOut<float>>("quartEaseOut");
+    math.funcStaticExt<&glm::quarticEaseInOut<float>>("quartEaseInOut");
+    math.funcStaticExt<&glm::quadraticEaseIn<float>>("quadEaseIn");
+    math.funcStaticExt<&glm::quadraticEaseOut<float>>("quadEaseOut");
+    math.funcStaticExt<&glm::quadraticEaseInOut<float>>("quadEaseInOut");
+    math.funcStaticExt<&glm::exponentialEaseIn<float>>("expoEaseIn");
+    math.funcStaticExt<&glm::exponentialEaseOut<float>>("expoEaseOut");
+    math.funcStaticExt<&glm::exponentialEaseInOut<float>>("expoEaseInOut");
     math.funcStaticExt<&glm::elasticEaseIn<float>>("elasticEaseIn");
     math.funcStaticExt<&glm::elasticEaseOut<float>>("elasticEaseOut");
     math.funcStaticExt<&glm::elasticEaseInOut<float>>("elasticEaseInOut");
     math.funcStaticExt<&glm::cubicEaseIn<float>>("cubicEaseIn");
     math.funcStaticExt<&glm::cubicEaseOut<float>>("cubicEaseOut");
     math.funcStaticExt<&glm::cubicEaseInOut<float>>("cubicEaseInOut");
-    math.funcStaticExt<&glm::circularEaseIn<float>>("circularEaseIn");
-    math.funcStaticExt<&glm::circularEaseOut<float>>("circularEaseOut");
-    math.funcStaticExt<&glm::circularEaseInOut<float>>("circularEaseInOut");
+    math.funcStaticExt<&glm::circularEaseIn<float>>("circEaseIn");
+    math.funcStaticExt<&glm::circularEaseOut<float>>("circEaseOut");
+    math.funcStaticExt<&glm::circularEaseInOut<float>>("circEaseInOut");
     math.funcStaticExt<&glm::bounceEaseIn<float>>("bounceEaseIn");
     math.funcStaticExt<&glm::bounceEaseOut<float>>("bounceEaseOut");
     math.funcStaticExt<&glm::bounceEaseInOut<float>>("bounceEaseInOut");
