@@ -1,6 +1,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 
 #include "mv/config.h"
+#include "mv/util.h"
 #include "mv/gl.h"
 #include "mv/graphics/graphics.h"
 #include <SDL2/SDL.h>
@@ -12,35 +13,6 @@
 #include <memory>
 
 namespace mv {
-
-std::string default_vert = R"glsl(#version 100
-attribute vec2 attribPos;
-attribute vec2 attribUV;
-attribute vec4 attribColor;
-
-varying mediump vec4 vertexColor;
-varying mediump vec2 texUV;
-
-uniform mat3 view;
-uniform mat3 projection;
-
-void main() {
-	vertexColor = attribColor;
-	texUV = attribUV;
-   gl_Position = vec4(projection * vec3(attribPos, 1.0), 1.0);
-}
-)glsl";
-
-std::string default_frag = R"glsl(#version 100
-varying mediump vec4 vertexColor;
-varying mediump vec2 texUV;
-
-uniform sampler2D texID;
-
-void main() {
-	gl_FragColor = texture2D(texID, texUV) * vertexColor;
-}
-)glsl";
 
 Renderer::~Renderer() {
     for (DrawCall &dc : drawcalls) {

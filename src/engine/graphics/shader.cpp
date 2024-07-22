@@ -1,5 +1,6 @@
 #include "mv/graphics/shader.h"
 #include "mv/gl.h"
+#include "mv/util.h"
 #include "mv/config.h"
 #include <assert.h>
 #include <fstream>
@@ -12,37 +13,7 @@
 
 namespace mv {
 
-const char *default_vert =
-    "#version 100\n"
-    "attribute vec2 attribPos;\n"
-    "attribute vec2 attribUV;\n"
-    "attribute vec4 attribColor;\n"
-    "varying mediump vec4 vertexColor;\n"
-    "varying mediump vec2 texUV;\n"
-    // "varying float texIndex;\n"
-    "uniform mat3 view;\n "
-    "uniform mat3 projection;\n"
-    "void main() {\n"
-    "	vertexColor = attribColor;\n"
-    "	texUV = attribUV;\n"
-    // "	texIndex = attribTextureIndex;\n"
-    "   gl_Position = vec4(projection * vec3(attribPos, 1.0), 1.0);\n"
-    "}\n";
-
-const char *default_frag =
-    "#version 100\n"
-    "varying mediump vec4 vertexColor;\n"
-    "varying mediump vec2 texUV;\n"
-    // "varying mediump float texIndex;\n"
-    "uniform sampler2D texID;\n"
-    // "uniform sampler2D texID[8];\n"
-    "void main() {\n"
-    "	gl_FragColor = texture2D(texID, texUV) * vertexColor;\n"
-    // "	gl_FragColor = texture2D(texID[int(texIndex)], texUV) *
-    // vertexColor;\n" "	gl_FragColor = vertexColor;\n"
-    "}\n";
-
-Shader::Shader(std::string &vs_code, std::string &fs_code) {
+Shader::Shader(std::string vs_code, std::string fs_code) {
     GLuint vs, fs;
     vs = load_shader(vs_code.c_str(), GL_VERTEX_SHADER);
     fs = load_shader(fs_code.c_str(), GL_FRAGMENT_SHADER);
@@ -51,8 +22,8 @@ Shader::Shader(std::string &vs_code, std::string &fs_code) {
 
 Shader::Shader() {
     GLuint vs, fs;
-    vs = load_shader(default_vert, GL_VERTEX_SHADER);
-    fs = load_shader(default_frag, GL_FRAGMENT_SHADER);
+    vs = load_shader(default_vert.c_str(), GL_VERTEX_SHADER);
+    fs = load_shader(default_frag.c_str(), GL_FRAGMENT_SHADER);
     id = link_shader_program(vs, fs);
 }
 
@@ -203,7 +174,7 @@ GLuint link_shader_program(GLuint vertex, GLuint fragment) {
 
 Shader load_default_shader() { return {}; }
 
-Shader load_shader_file(std::string &vs_path, std::string &fs_path) {
+Shader load_shader_file(std::string vs_path, std::string fs_path) {
     std::string vs_code, fs_code, line;
     std::ifstream vs_file, fs_file;
 

@@ -1,4 +1,4 @@
-import "mv" for Math, Sprite, MyGame, Vec2
+import "mv" for Math, Sprite, MyGame, Vec2, Vec4
 
 class MySprite {
     construct new() {
@@ -10,6 +10,12 @@ class MySprite {
     update(self, dt) {
         _timer = _timer + dt * 4
         self.pos = Vec2.new(100 * _timer.sin, 100 * _timer.cos)
+        self.color = Vec4.new(
+            (_timer+2).sin*0.5+0.5,
+            (_timer+4).sin*0.5+0.5,
+            (_timer+6).sin*0.5+0.5,
+            1.0
+        )
     }
 
     draw(self) {}

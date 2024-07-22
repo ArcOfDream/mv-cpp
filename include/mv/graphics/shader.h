@@ -44,7 +44,7 @@ class Shader {
   public:
     Shader();
     Shader(std::shared_ptr<Shader> &);
-    Shader(std::string &vs_code, std::string &fs_code);
+    Shader(std::string vs_code, std::string fs_code);
     void use();
     void set_shader_program(GLuint pid);
     GLuint get_id();
@@ -78,6 +78,6 @@ class Shader {
 GLuint load_shader(const char *src, GLenum shader_type);
 GLuint link_shader_program(GLuint vertex, GLuint fragment);
 Shader load_default_shader();
-Shader load_shader_file(std::string &vs_path, std::string &fs_path);
+Shader load_shader_file(std::string vs_path, std::string fs_path);
 
 } // namespace mv

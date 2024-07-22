@@ -5,7 +5,7 @@
 namespace mv {
 using std::pair;
 
-Material::Material(std::shared_ptr<Shader> _shd, std::string &_name) {
+Material::Material(std::shared_ptr<Shader> _shd, std::string _name) {
     shader = _shd;
     name = _name;
 
@@ -55,7 +55,7 @@ MaterialBuilder::MaterialBuilder(std::string name) {
     mat = std::make_shared<Material>(nullptr, name);
 }
 
-MaterialBuilder &MaterialBuilder::begin(std::string &vs, std::string &fs) {
+MaterialBuilder &MaterialBuilder::begin(const std::string vs, const std::string fs) {
     mat->shader = std::make_shared<Shader>(vs, fs);
     return *this;
 }
@@ -65,7 +65,7 @@ MaterialBuilder &MaterialBuilder::begin(std::shared_ptr<Shader> sh) {
     return *this;
 }
 
-MaterialBuilder &MaterialBuilder::uniform_bool(std::string name, bool value) {
+MaterialBuilder &MaterialBuilder::uniform_bool(std::string name, const bool value) {
     ShaderUniform<bool> u{};
     u.name = name;
     u.type = BOOL;
@@ -77,7 +77,7 @@ MaterialBuilder &MaterialBuilder::uniform_bool(std::string name, bool value) {
     return *this;
 }
 
-MaterialBuilder &MaterialBuilder::uniform_int(std::string name, int value) {
+MaterialBuilder &MaterialBuilder::uniform_int(std::string name, const int value) {
     ShaderUniform<int> u{};
     u.name = name;
     u.type = INT;
@@ -89,7 +89,7 @@ MaterialBuilder &MaterialBuilder::uniform_int(std::string name, int value) {
     return *this;
 }
 
-MaterialBuilder &MaterialBuilder::uniform_float(std::string name, float value) {
+MaterialBuilder &MaterialBuilder::uniform_float(std::string name, const float value) {
     ShaderUniform<float> u{};
     u.name = name;
     u.type = FLOAT;
@@ -101,7 +101,7 @@ MaterialBuilder &MaterialBuilder::uniform_float(std::string name, float value) {
     return *this;
 }
 
-MaterialBuilder &MaterialBuilder::uniform_vec2(std::string name, glm::vec2 value) {
+MaterialBuilder &MaterialBuilder::uniform_vec2(std::string name, const glm::vec2 value) {
     ShaderUniform<glm::vec2> u{};
     u.name = name;
     u.type = VEC2;
@@ -113,7 +113,7 @@ MaterialBuilder &MaterialBuilder::uniform_vec2(std::string name, glm::vec2 value
     return *this;
 }
 
-MaterialBuilder &MaterialBuilder::uniform_vec3(std::string name, glm::vec3 value) {
+MaterialBuilder &MaterialBuilder::uniform_vec3(std::string name, const glm::vec3 value) {
     ShaderUniform<glm::vec3> u{};
     u.name = name;
     u.type = VEC3;
@@ -125,7 +125,7 @@ MaterialBuilder &MaterialBuilder::uniform_vec3(std::string name, glm::vec3 value
     return *this;
 }
 
-MaterialBuilder &MaterialBuilder::uniform_vec4(std::string name, glm::vec4 value) {
+MaterialBuilder &MaterialBuilder::uniform_vec4(std::string name, const glm::vec4 value) {
     ShaderUniform<glm::vec4> u{};
     u.name = name;
     u.type = VEC4;
@@ -137,7 +137,7 @@ MaterialBuilder &MaterialBuilder::uniform_vec4(std::string name, glm::vec4 value
     return *this;
 }
 
-MaterialBuilder &MaterialBuilder::uniform_mat3(std::string name, glm::mat3 value) {
+MaterialBuilder &MaterialBuilder::uniform_mat3(std::string name, const glm::mat3 value) {
     ShaderUniform<glm::mat3> u{};
     u.name = name;
     u.type = INT;
