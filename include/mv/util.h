@@ -65,3 +65,17 @@ void main() {
 	gl_FragColor = texture2D(texID, texUV) * vertexColor;
 }
 )glsl";
+
+// Fragment shader for the fontstash text
+const std::string text_frag = R"glsl(#version 100
+varying mediump vec4 vertexColor;
+varying mediump vec2 texUV;
+
+uniform sampler2D texID;
+
+void main() {
+    vec4 color = texture2D(texID, texUV);
+    color.a = color.r;
+	gl_FragColor = color * vertexColor;
+}
+)glsl";
