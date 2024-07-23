@@ -51,6 +51,7 @@ public:
     MaterialBuilder &uniform_vec3(const std::string, const glm::vec3);
     MaterialBuilder &uniform_vec4(const std::string, const glm::vec4);
     MaterialBuilder &uniform_mat3(const std::string, const glm::mat3);
+    MaterialBuilder &uniform_sampler2d(const std::string, const int);
 
     std::shared_ptr<Material> end();
 };

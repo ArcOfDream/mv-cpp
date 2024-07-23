@@ -16,21 +16,27 @@ Material::Material(std::shared_ptr<Shader> _shd, std::string _name) {
 }
 
 void Material::update_uniforms() {
+    int count = 0;
     for (auto u : uniforms) {
         switch (u.second.type) {
-            case BOOL:
-                shader->set_bool(u.second);
-                break;
-            case INT:
-                shader->set_int(u.second);
-                break;
-            case SAMPLER2D:
-                break;
             case FLOAT:
                 shader->set_float(u.second);
                 break;
             case VEC2:
                 shader->set_vec2(u.second);
+                break;
+            case SAMPLER2D:
+                shader->set_int(u.second);
+                {
+                    if (const int* value = std::get_if<int>(&u.second.value)) {
+                        glActiveTexture(GL_TEXTURE1 + count);
+                        glBindTexture(GL_TEXTURE_2D, *value);
+                        count++;
+                    }
+                }
+                break;
+            case INT:
+                shader->set_int(u.second);
                 break;
             case VEC3:
                 shader->set_vec3(u.second);
@@ -40,6 +46,9 @@ void Material::update_uniforms() {
                 break;
             case MAT3:
                 shader->set_mat3(u.second);
+                break;
+            case BOOL:
+                shader->set_bool(u.second);
                 break;
             case MAT4:
                 break;
@@ -140,6 +149,17 @@ MaterialBuilder &MaterialBuilder::uniform_mat3(const std::string name, const glm
     mat->uniforms[name] = {
         name,
         MAT3,
+        glGetUniformLocation(mat->shader->get_id(), name.c_str()),
+        value
+    };
+    
+    return *this;
+}
+
+MaterialBuilder &MaterialBuilder::uniform_sampler2d(const std::string name, const int value) {
+    mat->uniforms[name] = {
+        name,
+        SAMPLER2D,
         glGetUniformLocation(mat->shader->get_id(), name.c_str()),
         value
     };

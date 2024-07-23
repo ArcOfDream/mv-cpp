@@ -1,3 +1,5 @@
+#include "mv/graphics/shader.h"
+#include <GLES2/gl2.h>
 #define GLM_ENABLE_EXPERIMENTAL
 
 #include "mv/config.h"
@@ -80,23 +82,24 @@ void Renderer::flush_drawcalls() {
             dc.material = nullptr;
             continue;
         }
-
-        glBindTexture(GL_TEXTURE_2D, dc.active_texture);
         
         if (dc.material) {
             Material &m = *dc.material;
             m.use();
-            m.set_uniform<int>("texID", dc.active_texture);
+            m.set_uniform<int>("texID", 0);
             m.set_uniform<glm::mat3>("projection", projection);
             m.update_uniforms();
         }
         else {
             Material &m = *default_material;
             m.use();
-            m.set_uniform<int>("texID", dc.active_texture);
+            m.set_uniform<int>("texID", 0);
             m.set_uniform<glm::mat3>("projection", projection);
             m.update_uniforms();
         }
+        
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, dc.active_texture);
 
         dc.vbo.bind();
         glEnableVertexAttribArray(0);

@@ -53,10 +53,8 @@ void Shader::set_int(const std::string &name, int value) const {
 };
 
 void Shader::set_int(Uniform &u) const {
-    if (const int* value = std::get_if<int>(&u.value)) {
+    if (const int* value = std::get_if<int>(&u.value))
         glUniform1i(u.location, *value);
-        printf("%i", *value);
-    }
 };
 
 void Shader::set_int_array(const std::string &name, unsigned int array_size,

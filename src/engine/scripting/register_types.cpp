@@ -189,10 +189,6 @@ void register_core_types(wren::VM &vm) {
     quad.func<&Quad::set_viewport>("setViewport");
     quad.func<&Quad::get_texcoords>("texcoords");
 
-    auto &uniformbase = module.klass<UniformBase>("UniformBase");
-    uniformbase.var<&UniformBase::name>("name");
-    uniformbase.var<&UniformBase::type>("type");
-
     auto &shader = module.klass<Shader>("Shader");
 }
 
