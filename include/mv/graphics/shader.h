@@ -5,6 +5,7 @@
 #include <glm/mat3x3.hpp>
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 #pragma once
@@ -24,22 +25,18 @@ enum UniformType {
     SAMPLER2D,
 };
 
-class UniformBase {
-public:
+struct Uniform {
     std::string name;
     UniformType type;
     int location;
-};
-
-template<typename Type>
-class ShaderUniform : public UniformBase {
-public:
-    Type value;
+    std::variant<
+        bool,int,float,
+        glm::vec2,glm::vec3,
+        glm::vec4,glm::mat3> value; 
 };
 
 class Shader {
     GLuint id;
-    std::vector<UniformBase> uniforms;
 
   public:
     Shader();
@@ -48,31 +45,30 @@ class Shader {
     void use();
     void set_shader_program(GLuint pid);
     GLuint get_id();
-    std::vector<UniformBase> &get_uniforms();
 
     void set_bool(const std::string &, bool) const;
-    void set_bool(ShaderUniform<bool> &) const;
+    void set_bool(Uniform &) const;
 
     void set_int(const std::string &, int) const;
-    void set_int(ShaderUniform<int> &) const;
+    void set_int(Uniform &) const;
 
     void set_int_array(const std::string &, unsigned int, int *) const;
     // void set_uint_array(const std::string &, unsigned int, unsigned int *) const;
 
     void set_float(const std::string &, float) const;
-    void set_float(ShaderUniform<float> &) const;
+    void set_float(Uniform &) const;
 
     void set_vec2(const std::string &, const glm::vec2 &) const;
-    void set_vec2(ShaderUniform<glm::vec2> &) const;
+    void set_vec2(Uniform &) const;
 
     void set_vec3(const std::string &, const glm::vec3 &) const;
-    void set_vec3(ShaderUniform<glm::vec3> &) const;
+    void set_vec3(Uniform &) const;
 
     void set_vec4(const std::string &, const glm::vec4 &) const;
-    void set_vec4(ShaderUniform<glm::vec4> &) const;
+    void set_vec4(Uniform &) const;
 
     void set_mat3(const std::string &, const glm::mat3 &) const;
-    void set_mat3(ShaderUniform<glm::mat3> &) const;
+    void set_mat3(Uniform &) const;
 };
 
 GLuint load_shader(const char *src, GLenum shader_type);

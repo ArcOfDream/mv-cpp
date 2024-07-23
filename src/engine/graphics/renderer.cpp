@@ -20,9 +20,7 @@ Renderer::~Renderer() {
     }
 }
 
-void Renderer::init() {
-    default_shader = std::shared_ptr<Shader>(new Shader());
-    
+void Renderer::init() {    
     for (unsigned long i = 0; i < MAX_DRAWCALLS; i++) {
         drawcalls[i].vbo.buffer_data(0, MAX_VERTICES * sizeof(Vertex));
     }
@@ -34,7 +32,7 @@ void Renderer::init() {
         .uniform_mat3("projection", projection)
         .uniform_int("texID", 0)
         .end();
-
+    
     glEnable(GL_BLEND);
     glDepthFunc(GL_NEVER);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -79,12 +77,28 @@ void Renderer::flush_drawcalls() {
     for (DrawCall &dc : drawcalls) {
         if (dc.vertex_count == 0) {
             dc.active_texture = 0;
+            dc.material = nullptr;
             continue;
         }
 
         glBindTexture(GL_TEXTURE_2D, dc.active_texture);
-        dc.vbo.bind();
+        
+        if (dc.material) {
+            Material &m = *dc.material;
+            m.use();
+            m.set_uniform<int>("texID", dc.active_texture);
+            m.set_uniform<glm::mat3>("projection", projection);
+            m.update_uniforms();
+        }
+        else {
+            Material &m = *default_material;
+            m.use();
+            m.set_uniform<int>("texID", dc.active_texture);
+            m.set_uniform<glm::mat3>("projection", projection);
+            m.update_uniforms();
+        }
 
+        dc.vbo.bind();
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
         glEnableVertexAttribArray(2);
@@ -98,18 +112,13 @@ void Renderer::flush_drawcalls() {
         glBufferSubData(GL_ARRAY_BUFFER, 0, dc.vertex_count * sizeof(Vertex),
                         dc.vertices);
 
-        if (dc.shader) {
-            dc.shader->use();
-            dc.shader->set_int("tex", dc.active_texture);
-            dc.shader->set_mat3("projection", projection);
-        }
         total_verts += dc.vertex_count;
 
         glDrawArrays(GL_TRIANGLES, 0, dc.vertex_count);
 
         dc.vertex_count = 0;
         dc.active_texture = 0;
-        dc.shader = default_shader;
+        dc.material = nullptr;
     }
     total_verts = 0;
 }

@@ -1,5 +1,6 @@
 #include "../config.h"
-#include "mv/gl.h"
+#include "../gl.h"
+#include "../resource/material.h"
 #include "shader.h"
 #include "vertex.h"
 #include "vertexbuffer.h"
@@ -12,10 +13,9 @@
 namespace mv {
 struct DrawCall {
     VertexBuffer vbo = VertexBuffer();
-    std::shared_ptr<Shader> shader = nullptr;
-    int textures[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+    // std::shared_ptr<Shader> shader = nullptr;
+    std::shared_ptr<Material> material = nullptr;
     unsigned int active_texture = 0;
-    int texture_count = 8;
     unsigned int vertex_count = 0;
     Vertex vertices[MAX_VERTICES] = {};
 };
