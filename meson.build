@@ -3,17 +3,15 @@ project(
   ['cpp', 'c'],
   version: '0.1',
   license: 'mit',
-  default_options: ['warning_level=3', 'cpp_std=c++17'],
+  default_options: ['warning_level=2', 'cpp_std=c++17'],
 )
 
 cc = meson.get_compiler('c')
-# fs = import('fs')
 l_args = []
 
 imgui_project = subproject('imgui')
 soloud_project = subproject('soloud')
 pxtone_project = subproject('libpxtone')
-# sol_project = subproject('sol')
 
 include_dirs = include_directories('include')
 includes = [include_dirs]
@@ -27,17 +25,8 @@ deps = [
   pxtone_project.get_variable('lib_pxtone_dep'),
   dependency('glm'),
   dependency('threads'),
+  dependency('wren'),
 ]
-
-if get_option('luajit')
-  deps += dependency('luajit')
-else
-  if get_option('use_lua53')
-    deps += dependency('lua5.3')
-  else
-    deps += dependency('lua5.4')
-  endif
-endif
 
 if target_machine.system() not in ['emscripten']
   deps += dependency('SDL2_image')
@@ -89,6 +78,7 @@ sources = [
   'src/engine/objects/sprite.cpp',
 
   'src/engine/resource/texture.cpp',
+  'src/engine/resource/material.cpp',
 
   'src/engine/scripting/register_types.cpp',
 

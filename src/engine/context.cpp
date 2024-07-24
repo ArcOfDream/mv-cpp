@@ -5,11 +5,8 @@
 #include "mv/gl.h"
 #include "mv/graphics/renderer.h"
 #include "mv/scripting/register_types.h"
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_events.h>
 #include <SDL2/SDL_hints.h>
 #include <SDL2/SDL_timer.h>
-#include <SDL2/SDL_video.h>
 #include <assert.h>
 // #include <memory>
 #include <mutex>
@@ -22,7 +19,7 @@ namespace mv {
 
 #ifdef __EMSCRIPTEN__
 void mv_em_main_loop(void *ctx) {
-    Context *c = (Context*)ctx;
+    Context *c = (Context *)ctx;
     c->em_try_exit();
     c->main_loop();
 }
@@ -81,17 +78,17 @@ void Context::engine_init() {
     gl_context = SDL_GL_CreateContext(window);
     assert(gl_context);
 
-    // instead of using SDL_Delay, we're going to limit the update rate
-    // to the screen refresh rate.
-    // Though not all devices may support adaptive vsync, so we
-    // go ahead and try to use the vsync
-    #ifndef __EMSCRIPTEN__
+// instead of using SDL_Delay, we're going to limit the update rate
+// to the screen refresh rate.
+// Though not all devices may support adaptive vsync, so we
+// go ahead and try to use the vsync
+#ifndef __EMSCRIPTEN__
     SDL_GL_MakeCurrent(window, gl_context);
     int swap = SDL_GL_SetSwapInterval(-1);
     if (swap != 0)
         SDL_GL_SetSwapInterval(1);
-    #endif
-    
+#endif
+
     // renderer init
     renderer.init();
     renderer.width = window_width;
@@ -110,13 +107,13 @@ void Context::engine_init() {
     ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
     ImGui_ImplOpenGL3_Init();
 
-    // sol2 init
-    lua.open_libraries(sol::lib::base, sol::lib::package, sol::lib::math,
-                       sol::lib::string, sol::lib::table, sol::lib::utf8,
-                       sol::lib::debug);
-    register_glm_types(lua);
-    register_resource_types(lua);
-    register_node_types(lua);
+    // wren init
+    register_math_types(wren_vm);
+    register_glm_types(wren_vm);
+    register_core_types(wren_vm);
+    register_resource_types(wren_vm);
+    register_node_types(wren_vm);
+    register_wren_types(wren_vm); // custom types will be registered here
 
     // and the rest of init
     init();
@@ -185,7 +182,9 @@ void Context::main_loop() {
 }
 
 void Context::draw_loop() {
-    SDL_ShowWindow(window); // it seems on some platforms this won't make the window show
+    // it seems on some platforms this won't make the window show
+    SDL_ShowWindow(window);
+
     if (SDL_GL_MakeCurrent(window, gl_context) != 0) {
         printf("Failed to make OpenGL context current in draw thread: %s\n",
                SDL_GetError());
@@ -215,7 +214,7 @@ void Context::draw_loop() {
 }
 
 void Context::em_try_exit() {
-    #ifdef __EMSCRIPTEN__
+#ifdef __EMSCRIPTEN__
     std::lock_guard<std::mutex> lock(mutex);
     if (should_close) {
         draw_running = false;
@@ -226,7 +225,7 @@ void Context::em_try_exit() {
 
         emscripten_cancel_main_loop();
     }
-    #endif
+#endif
 }
 
 void Context::stop() {

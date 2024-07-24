@@ -1,63 +1,59 @@
 #include "SDL_events.h"
-#include "sol/sol.hpp"
+#include "wrenbind17/wrenbind17.hpp"
 #include <list>
-#include <lua.h>
 #include <memory>
 #include <string>
+
+namespace wren = wrenbind17;
 
 #pragma once
 
 namespace mv {
 class Node {
   public:
+    Node(std::string);
+    Node(wren::Variable, std::string);
+
     std::string name;
 
-    // Lua related stuff
-    lua_State *lua = nullptr;
-    std::unordered_map<std::string, sol::object> entries;
-    void lua_dynamic_set(std::string key, sol::stack_object value);
-    sol::object lua_dynamic_get(std::string key);
+    // wren specific fields
+    bool wren_constructed = false;
+    wren::Method wren_init;
+    wren::Method wren_update;
+    wren::Method wren_input;
 
-    // scene graph type of thing
+    // scene graph fields
     std::list<std::shared_ptr<Node>> children;
     Node *parent = nullptr;
 
-    Node(const char*);
-    Node(sol::this_state, const char*);
+    template <typename T, typename... Targs>
+    T *add_child(const Targs &...args) {
+        static_assert(std::is_base_of<Node, T>::value,
+                      "T must derive from Node");
 
-  template <typename T, typename... Targs>
-  T* add_child(const Targs &...args) {
-    static_assert(std::is_base_of<Node, T>::value, "T must derive from Node");
+        auto c = std::make_shared<T>(args...);
+        T *ptr = c.get();
+        c->parent = this;
+        children.emplace_back(c);
+        return ptr;
+    }
 
-    auto c = std::make_shared<T>(args...);
-    T* ptr = c.get();
-    c->parent = this;
-    children.emplace_back(c);
-    return ptr;
-  }
+    template <typename T>
+    std::shared_ptr<T> add_instanced_child(std::shared_ptr<T> what) {
+        static_assert(std::is_base_of<Node, T>::value,
+                      "T must derive from Node");
 
-  template <typename T>
-  T* add_instanced_child(T *what) {
-    static_assert(std::is_base_of<Node, T>::value, "T must derive from Node");
-
-    what->parent = this;
-    children.emplace_back(std::shared_ptr<T>(what));
-    return what;
-  }
+        what->parent = this;
+        children.emplace_back(what);
+        return what;
+    }
 
     virtual void _init() {};
     virtual void _update(double);
-    virtual void _draw() {};
-    virtual void _input(SDL_Event&) {};
+    virtual void _input(SDL_Event &) {};
 
     virtual void init() {};
     virtual void update(double) {};
-    virtual void draw() {};
-    virtual void input(SDL_Event&) {};
-
-    sol::function lua_init;
-    sol::function lua_update;
-    sol::function lua_draw;
-    sol::function lua_input;
+    virtual void input(SDL_Event &) {};
 };
 } // namespace mv
