@@ -4,9 +4,9 @@
 
 #include "mv/graphics/renderer.h"
 #include "mv/graphics/vertex.h"
-#include "mv/resource/material.h"
 #include "mv/objects/node.h"
 #include "mv/objects/sprite.h"
+#include "mv/resource/material.h"
 #include "mv/resource/texture.h"
 #include "wrenbind17/wrenbind17.hpp"
 
@@ -174,9 +174,9 @@ void register_core_types(wren::VM &vm) {
     auto &renderer = module.klass<Renderer>("Renderer");
     renderer.funcStatic<&Renderer::get>("get");
     renderer.func<&Renderer::push_triangle>("pushTriangle");
-    renderer.func<static_cast
-    <void (Renderer::*)(Vertex&, Vertex&, Vertex&, Vertex&, unsigned int)>
-    (&Renderer::push_quad)>("pushQuadVerts");
+    renderer.func<static_cast<void (Renderer::*)(Vertex &, Vertex &, Vertex &,
+                                                 Vertex &, unsigned int)>(
+        &Renderer::push_quad)>("pushQuadVerts");
 
     auto &vertex = module.klass<Vertex>("Vertex");
     vertex.var<&Vertex::pos>("pos");

@@ -1,7 +1,7 @@
 #include "mv/graphics/shader.h"
+#include "mv/config.h"
 #include "mv/gl.h"
 #include "mv/util.h"
-#include "mv/config.h"
 #include <assert.h>
 #include <charconv>
 #include <fstream>
@@ -29,9 +29,7 @@ Shader::Shader() {
     id = link_shader_program(vs, fs);
 }
 
-Shader::Shader(std::shared_ptr<Shader> &shd) {
-    id = shd->get_id();
-}
+Shader::Shader(std::shared_ptr<Shader> &shd) { id = shd->get_id(); }
 
 void Shader::use() { glUseProgram(id); }
 
@@ -44,7 +42,7 @@ void Shader::set_bool(const std::string &name, bool value) const {
 };
 
 void Shader::set_bool(Uniform &u) const {
-    if (const bool* value = std::get_if<bool>(&u.value))
+    if (const bool *value = std::get_if<bool>(&u.value))
         glUniform1i(u.location, *value);
 };
 
@@ -53,7 +51,7 @@ void Shader::set_int(const std::string &name, int value) const {
 };
 
 void Shader::set_int(Uniform &u) const {
-    if (const int* value = std::get_if<int>(&u.value))
+    if (const int *value = std::get_if<int>(&u.value))
         glUniform1i(u.location, *value);
 };
 
@@ -74,7 +72,7 @@ void Shader::set_float(const std::string &name, float value) const {
 };
 
 void Shader::set_float(Uniform &u) const {
-    if (const float* value = std::get_if<float>(&u.value))
+    if (const float *value = std::get_if<float>(&u.value))
         glUniform1f(u.location, *value);
 };
 
@@ -83,7 +81,7 @@ void Shader::set_vec2(const std::string &name, const glm::vec2 &value) const {
 };
 
 void Shader::set_vec2(Uniform &u) const {
-    if (const glm::vec2* value = std::get_if<glm::vec2>(&u.value))
+    if (const glm::vec2 *value = std::get_if<glm::vec2>(&u.value))
         glUniform2f(u.location, value->x, value->y);
 };
 
@@ -93,7 +91,7 @@ void Shader::set_vec3(const std::string &name, const glm::vec3 &value) const {
 };
 
 void Shader::set_vec3(Uniform &u) const {
-    if (const glm::vec3* value = std::get_if<glm::vec3>(&u.value))
+    if (const glm::vec3 *value = std::get_if<glm::vec3>(&u.value))
         glUniform3f(u.location, value->x, value->y, value->z);
 };
 
@@ -103,7 +101,7 @@ void Shader::set_vec4(const std::string &name, const glm::vec4 &value) const {
 };
 
 void Shader::set_vec4(Uniform &u) const {
-    if (const glm::vec4* value = std::get_if<glm::vec4>(&u.value))
+    if (const glm::vec4 *value = std::get_if<glm::vec4>(&u.value))
         glUniform4f(u.location, value->x, value->y, value->z, value->w);
 };
 
@@ -113,10 +111,14 @@ void Shader::set_mat3(const std::string &name, const glm::mat3 &mat) const {
 };
 
 void Shader::set_mat3(Uniform &u) const {
-    if (const glm::mat3* value = std::get_if<glm::mat3>(&u.value)) {        
+    if (const glm::mat3 *value = std::get_if<glm::mat3>(&u.value)) {
         auto &m = *value;
         glUniformMatrix3fv(u.location, 1, GL_FALSE, &m[0][0]);
     }
+};
+
+void Shader::set_sampler2D(const int location, const int value) const {
+    glUniform1i(location, value);
 };
 
 GLuint load_shader(const char *src, GLenum shader_type) {
@@ -204,7 +206,7 @@ Shader load_shader_file(std::string vs_path, std::string fs_path) {
 
     vs_file.close();
     fs_file.close();
-    
+
     return Shader(vs_code, fs_code);
 }
 } // namespace mv

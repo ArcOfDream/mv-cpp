@@ -19,7 +19,7 @@ namespace mv {
 
 #ifdef __EMSCRIPTEN__
 void mv_em_main_loop(void *ctx) {
-    Context *c = (Context*)ctx;
+    Context *c = (Context *)ctx;
     c->em_try_exit();
     c->main_loop();
 }
@@ -78,17 +78,17 @@ void Context::engine_init() {
     gl_context = SDL_GL_CreateContext(window);
     assert(gl_context);
 
-    // instead of using SDL_Delay, we're going to limit the update rate
-    // to the screen refresh rate.
-    // Though not all devices may support adaptive vsync, so we
-    // go ahead and try to use the vsync
-    #ifndef __EMSCRIPTEN__
+// instead of using SDL_Delay, we're going to limit the update rate
+// to the screen refresh rate.
+// Though not all devices may support adaptive vsync, so we
+// go ahead and try to use the vsync
+#ifndef __EMSCRIPTEN__
     SDL_GL_MakeCurrent(window, gl_context);
     int swap = SDL_GL_SetSwapInterval(-1);
     if (swap != 0)
         SDL_GL_SetSwapInterval(1);
-    #endif
-    
+#endif
+
     // renderer init
     renderer.init();
     renderer.width = window_width;
@@ -182,7 +182,9 @@ void Context::main_loop() {
 }
 
 void Context::draw_loop() {
-    SDL_ShowWindow(window); // it seems on some platforms this won't make the window show
+    // it seems on some platforms this won't make the window show
+    SDL_ShowWindow(window);
+
     if (SDL_GL_MakeCurrent(window, gl_context) != 0) {
         printf("Failed to make OpenGL context current in draw thread: %s\n",
                SDL_GetError());
@@ -212,7 +214,7 @@ void Context::draw_loop() {
 }
 
 void Context::em_try_exit() {
-    #ifdef __EMSCRIPTEN__
+#ifdef __EMSCRIPTEN__
     std::lock_guard<std::mutex> lock(mutex);
     if (should_close) {
         draw_running = false;
@@ -223,7 +225,7 @@ void Context::em_try_exit() {
 
         emscripten_cancel_main_loop();
     }
-    #endif
+#endif
 }
 
 void Context::stop() {

@@ -4,7 +4,6 @@
 #include "imgui.h"
 #include "soloud.h"
 #include "soloud_error.h"
-#include "wrenbind17/variable.hpp"
 #include "wrenbind17/wrenbind17.hpp"
 #include <memory>
 #include <stdio.h>

@@ -1,5 +1,5 @@
-#include "resource.h"
 #include "mv/graphics/shader.h"
+#include "resource.h"
 #include <unordered_map>
 
 #pragma once
@@ -7,7 +7,7 @@
 namespace mv {
 
 class Material : public IResource {
-public:
+  public:
     std::unordered_map<std::string, Uniform> uniforms;
     std::shared_ptr<Shader> shader;
 
@@ -22,14 +22,13 @@ public:
 
     //     uniforms[name] = u;
     // }
-    
-    template <typename T>
-    void set_uniform(std::string name, const T value) {
+
+    template <typename T> void set_uniform(std::string name, const T value) {
         if (uniforms.count(name)) {
             uniforms.at(name).value = value;
         }
     }
-    
+
     void update_uniforms();
     void use();
 
@@ -38,7 +37,8 @@ public:
 
 class MaterialBuilder {
     std::shared_ptr<Material> mat = nullptr;
-public:
+
+  public:
     MaterialBuilder(std::string);
 
     MaterialBuilder &begin(const std::string vs, const std::string fs);
@@ -56,4 +56,4 @@ public:
     std::shared_ptr<Material> end();
 };
 
-}
+} // namespace mv

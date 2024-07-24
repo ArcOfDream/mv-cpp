@@ -1,11 +1,9 @@
-#include "mv/graphics/shader.h"
-#include <GLES2/gl2.h>
 #define GLM_ENABLE_EXPERIMENTAL
 
 #include "mv/config.h"
-#include "mv/util.h"
 #include "mv/gl.h"
 #include "mv/graphics/graphics.h"
+#include "mv/util.h"
 #include <SDL2/SDL.h>
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/gtx/matrix_transform_2d.hpp>
@@ -22,7 +20,7 @@ Renderer::~Renderer() {
     }
 }
 
-void Renderer::init() {    
+void Renderer::init() {
     for (unsigned long i = 0; i < MAX_DRAWCALLS; i++) {
         drawcalls[i].vbo.buffer_data(0, MAX_VERTICES * sizeof(Vertex));
     }
@@ -30,11 +28,11 @@ void Renderer::init() {
     projection = glm::mat3(glm::ortho(0.0f, width, height, 0.0f));
 
     default_material = MaterialBuilder("default_material")
-        .begin(default_vert, default_frag)
-        .uniform_mat3("projection", projection)
-        .uniform_int("texID", 0)
-        .end();
-    
+                           .begin(default_vert, default_frag)
+                           .uniform_mat3("projection", projection)
+                           .uniform_int("texID", 0)
+                           .end();
+
     glEnable(GL_BLEND);
     glDepthFunc(GL_NEVER);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -62,7 +60,6 @@ void Renderer::begin_frame() {
     if (active_camera) {
         active_camera->update();
         projection *= active_camera->view_transform;
-        // projection = active_camera->view_transform * projection;
     }
 }
 
@@ -82,22 +79,21 @@ void Renderer::flush_drawcalls() {
             dc.material = nullptr;
             continue;
         }
-        
+
         if (dc.material) {
             Material &m = *dc.material;
             m.use();
             m.set_uniform<int>("texID", 0);
             m.set_uniform<glm::mat3>("projection", projection);
             m.update_uniforms();
-        }
-        else {
+        } else {
             Material &m = *default_material;
             m.use();
             m.set_uniform<int>("texID", 0);
             m.set_uniform<glm::mat3>("projection", projection);
             m.update_uniforms();
         }
-        
+
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, dc.active_texture);
 
@@ -130,6 +126,8 @@ void Renderer::end_frame() {
     flush_drawcalls();
     // glBindTexture(GL_TEXTURE_2D, 0);
 }
+
+// clang-format off
 
 void Renderer::push_triangle(glm::vec2 apos, glm::vec2 bpos, glm::vec2 cpos,
                              glm::vec4 acol, glm::vec4 bcol, glm::vec4 ccol,
@@ -189,5 +187,7 @@ void Renderer::push_quad(Vertex &v1, Vertex &v2, Vertex &v3, Vertex &v4,
     push_triangle(v1.pos, v4.pos, v3.pos, v1.color, v4.color, v3.color, v1.uv,
                   v4.uv, v3.uv, tex);
 }
+
+// clang-format on
 
 } // namespace mv

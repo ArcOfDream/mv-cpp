@@ -10,7 +10,7 @@
 
 namespace mv {
 
-class Material;    
+class Material;
 
 struct DrawCall {
     VertexBuffer vbo = VertexBuffer();
