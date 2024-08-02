@@ -87,6 +87,11 @@ void Sprite::set_color(glm::vec4 value) {
     }
 }
 
+std::shared_ptr<Material> Sprite::get_material() { return material; }
+void Sprite::set_material(std::shared_ptr<Material> value) {
+    material = value;
+}
+
 std::shared_ptr<Texture> Sprite::get_texture() { return tex; }
 void Sprite::set_texture(std::shared_ptr<Texture> value) {
     tex = value;

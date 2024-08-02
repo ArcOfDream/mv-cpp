@@ -190,6 +190,8 @@ void register_core_types(wren::VM &vm) {
     quad.func<&Quad::get_texcoords>("texcoords");
 
     auto &shader = module.klass<Shader>("Shader");
+    shader.ctor<std::string, std::string>();
+    shader.func<&Shader::get_id>("getID");
 }
 
 void register_resource_types(wren::VM &vm) {
@@ -198,22 +200,36 @@ void register_resource_types(wren::VM &vm) {
     auto &texture = module.klass<Texture>("Texture");
     texture.func<&Texture::get_tex_size>("getSize");
     texture.funcStaticExt<&load_texture_from_file>("loadFromFile");
+    
+    auto &uniform = module.klass<Uniform>("Uniform");
+    uniform.var<&Uniform::name>("name");
+    uniform.var<&Uniform::type>("type");
+    uniform.var<&Uniform::location>("location");
+    uniform.var<&Uniform::value>("value");
 
     auto &material = module.klass<Material>("Material");
     material.var<&Material::uniforms>("uniforms");
+    material.func<&Material::set_uniform<bool>>("setBool");
+    material.func<&Material::set_uniform<int>>("setInt");
+    material.func<&Material::set_uniform<float>>("setFloat");
+    material.func<&Material::set_uniform<glm::vec2>>("setVec2");
+    material.func<&Material::set_uniform<glm::vec3>>("setVec3");
+    material.func<&Material::set_uniform<glm::vec4>>("setVec4");
+    material.func<&Material::set_uniform<glm::mat3>>("setMat3");
 
     auto &materialbuilder = module.klass<MaterialBuilder>("MaterialBuilder");
     materialbuilder.ctor<std::string>();
     materialbuilder.func<static_cast<MaterialBuilder &(
         MaterialBuilder::*)(const std::string, const std::string)>(
         &MaterialBuilder::begin)>("begin");
-    materialbuilder.func<&MaterialBuilder::uniform_bool>("uniform_bool");
-    materialbuilder.func<&MaterialBuilder::uniform_int>("uniform_int");
-    materialbuilder.func<&MaterialBuilder::uniform_float>("uniform_float");
-    materialbuilder.func<&MaterialBuilder::uniform_vec2>("uniform_vec2");
-    materialbuilder.func<&MaterialBuilder::uniform_vec3>("uniform_vec3");
-    materialbuilder.func<&MaterialBuilder::uniform_vec4>("uniform_vec4");
-    materialbuilder.func<&MaterialBuilder::uniform_mat3>("uniform_mat3");
+    materialbuilder.func<&MaterialBuilder::uniform_bool>("uniformBool");
+    materialbuilder.func<&MaterialBuilder::uniform_int>("uniformInt");
+    materialbuilder.func<&MaterialBuilder::uniform_float>("uniformFloat");
+    materialbuilder.func<&MaterialBuilder::uniform_vec2>("uniformVec2");
+    materialbuilder.func<&MaterialBuilder::uniform_vec3>("uniformVec3");
+    materialbuilder.func<&MaterialBuilder::uniform_vec4>("uniformVec4");
+    materialbuilder.func<&MaterialBuilder::uniform_mat3>("uniformMat3");
+    materialbuilder.func<&MaterialBuilder::uniform_sampler2d>("uniformSampler2D");
     materialbuilder.func<&MaterialBuilder::end>("end");
 }
 

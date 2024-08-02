@@ -6,7 +6,6 @@
 #include <glm/gtx/string_cast.hpp>
 
 namespace mv {
-using std::pair;
 
 Material::Material(std::shared_ptr<Shader> _shd, std::string _name) {
     shader = _shd;

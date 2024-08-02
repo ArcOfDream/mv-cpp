@@ -1,5 +1,6 @@
 #include "mv/graphics/vertex.h"
 #include "mv/objects/node.h"
+#include "mv/resource/material.h"
 #include "mv/resource/texture.h"
 #include "wrenbind17/wrenbind17.hpp"
 #include <glm/glm.hpp>
@@ -18,6 +19,7 @@ class Sprite : public Node {
 
     glm::vec4 color = {1, 1, 1, 1};
 
+    std::shared_ptr<Material> material = nullptr;
     std::shared_ptr<Texture> tex = nullptr;
     bool center_image = true;
 
@@ -62,6 +64,9 @@ class Sprite : public Node {
 
     glm::vec4 get_color() const;
     void set_color(glm::vec4);
+    
+    std::shared_ptr<Material> get_material();
+    void set_material(std::shared_ptr<Material>);
 
     std::shared_ptr<Texture> get_texture();
     void set_texture(std::shared_ptr<Texture>);

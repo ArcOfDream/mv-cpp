@@ -14,9 +14,9 @@ class Material;
 
 struct DrawCall {
     VertexBuffer vbo = VertexBuffer();
-    // std::shared_ptr<Shader> shader = nullptr;
     std::shared_ptr<Material> material = nullptr;
     unsigned int active_texture = 0;
+    unsigned int active_framebuffer = 0;
     unsigned int sampler_count = 0;
     unsigned int vertex_count = 0;
     Vertex vertices[MAX_VERTICES] = {};

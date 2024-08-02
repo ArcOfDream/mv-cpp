@@ -1,16 +1,16 @@
 #define GLM_ENABLE_EXPERIMENTAL
 
-#include "mv/config.h"
+#include "mv/graphics/renderer.h"
+// #include "mv/config.h"
 #include "mv/gl.h"
-#include "mv/graphics/graphics.h"
 #include "mv/util.h"
 #include <SDL2/SDL.h>
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/gtx/matrix_transform_2d.hpp>
-#include <glm/mat3x3.hpp>
-#include <glm/vec2.hpp>
-#include <glm/vec4.hpp>
-#include <memory>
+// #include <glm/mat3x3.hpp>
+// #include <glm/vec2.hpp>
+// #include <glm/vec4.hpp>
+// #include <memory>
 
 namespace mv {
 
@@ -70,6 +70,15 @@ void Renderer::next_drawcall() {
         flush_drawcalls();
         active_drawcall = 0;
     }
+}
+
+void Renderer::set_material(std::shared_ptr<Material> m) {
+    if (drawcalls[active_drawcall].material &&
+        drawcalls[active_drawcall].material != m &&
+        drawcalls[active_drawcall].vertex_count > 0)
+        next_drawcall();
+    
+    drawcalls[active_drawcall].material = m;
 }
 
 void Renderer::flush_drawcalls() {

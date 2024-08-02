@@ -1,4 +1,4 @@
-#include "mv/gl.h"
+
 #include "camera2d.h"
 #include "drawcall.h"
 #include "mv/config.h"
@@ -56,7 +56,7 @@ class Renderer : public std::enable_shared_from_this<Renderer> {
     void end_frame();
     void next_drawcall();
     void flush_drawcalls();
-    void bind_sampler2D(Uniform&);
+    void set_material(std::shared_ptr<Material>);
 
     void push_triangle(glm::vec2 apos, glm::vec2 bpos, glm::vec2 cpos,
                        glm::vec4 acol, glm::vec4 bcol, glm::vec4 ccol,

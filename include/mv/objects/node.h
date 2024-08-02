@@ -34,7 +34,7 @@ class Node {
         auto c = std::make_shared<T>(args...);
         T *ptr = c.get();
         c->parent = this;
-        children.emplace_back(c);
+        children.push_back(c);
         return ptr;
     }
 
@@ -44,7 +44,7 @@ class Node {
                       "T must derive from Node");
 
         what->parent = this;
-        children.emplace_back(what);
+        children.push_back(what);
         return what;
     }
 

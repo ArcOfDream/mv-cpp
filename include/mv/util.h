@@ -27,9 +27,13 @@
             dirty = false;                                                     \
         }                                                                      \
                                                                                \
-        if (tex)                                                               \
-            Renderer::get().push_quad(verts[0], verts[1], verts[2], verts[3],  \
-                                      tex->get_id());                          \
+        if (tex) {                                                             \
+            Renderer &r = Renderer::get();                                     \
+            if (material)                                                      \
+                r.set_material(material);                                      \
+            r.push_quad(verts[0], verts[1], verts[2], verts[3],                \
+                        tex->get_id());                                        \
+        }                                                                      \
                                                                                \
         for (auto &child : children) {                                         \
             if (Sprite *spr = dynamic_cast<Sprite *>(child.get())) {           \

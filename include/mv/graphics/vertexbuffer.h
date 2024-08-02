@@ -8,9 +8,9 @@ class VertexBuffer {
 
   public:
     VertexBuffer();
-    VertexBuffer(const void*, GLuint);
+    VertexBuffer(const void *, GLuint);
     ~VertexBuffer();
-    void buffer_data(const void*, GLuint);
+    void buffer_data(const void *, GLuint);
     void bind() const;
     void unbind() const;
     GLuint get_id() const;
