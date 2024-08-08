@@ -32,24 +32,14 @@ if target_machine.system() not in ['emscripten']
   deps += dependency('SDL2_image')
 endif
 
-if get_option('use_pure_gles2')
-  if target_machine.system() not in ['windows', 'emscripten']
-    deps += dependency('glesv2')
-  else
-    if target_machine.system() in ['windows']
-      l_args += '-L' + meson.global_source_root() + '/lib'
-      # l_args += '-llibSDL2'
-      l_args += '-llibGLESv2'
-      l_args += '-llibEGL'
-    endif
-  endif
-  add_project_arguments('-DMV_USE_PURE_GLES2', language: ['cpp', 'c'])
+if target_machine.system() not in ['windows', 'emscripten']
+  deps += dependency('glesv2')
 else
-  deps += dependency('epoxy')
-  l_args += '-L' + meson.global_source_root() + '/lib'
-  # l_args += '-llibSDL2'
-  l_args += '-llibGLESv2'
-  # l_args += '-llibEGL'
+  if target_machine.system() in ['windows']
+    l_args += '-L' + meson.global_source_root() + '/lib'
+    l_args += '-llibGLESv2'
+    l_args += '-llibEGL'
+  endif
 endif
 
 if get_option('use_freetype')
